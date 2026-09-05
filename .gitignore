@@ -1,0 +1,26 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+/packetinstall
+/packetinstall-gui
+
+# Test binary
+*.test
+*.out
+
+# Packages & archives
+*.zip
+*.tar.gz
+*.tgz
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local test profiles
+my-profile.yaml
+test-*.yaml
+.env
+.env.local

@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>packetinstall — Developer Ecosystem, Project Dependency Auditor & Portable Sync</title>
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            cyber: {
+              950: '#070a0f',        // Main deep obsidian
+              900: '#0b1019',        // Sidebar & header
+              850: '#101726',        // Glass panel surface
+              800: '#162032',        // Active card hover
+              700: '#22324e',        // Border lines
+              cyan: '#06b6d4',       // Primary Neon Cyan
+              cyanLight: '#22d3ee',
+              emerald: '#10b981',    // Clean / Safe
+              violet: '#8b5cf6',     // MCP / Connectors
+              amber: '#f59e0b',      // Warning / Outdated
+              rose: '#f43f5e',       // Vulnerable / Deprecated
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Sleek Scrollbar */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #070a0f; }
+    ::-webkit-scrollbar-thumb { background: #162032; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+
+    /* Ambient Cyber-Mesh Glow */
+    .bg-mesh {
+      background-image: 
+        radial-gradient(ellipse at 15% 0%, rgba(6, 182, 212, 0.14) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 100%, rgba(139, 92, 246, 0.09) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 60%);
+    }
+
+    /* Glassmorphism Surface */
+    .glass-card {
+      background: rgba(16, 23, 38, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .glass-card:hover {
+      border-color: rgba(6, 182, 212, 0.3);
+    }
+
+    /* Active Navigation Item with Glowing Cyan Bar */
+    .nav-item-active {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(14, 116, 144, 0.25) 100%) !important;
+      color: #22d3ee !important;
+      position: relative;
+    }
+    .nav-item-active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 4px;
+      bottom: 4px;
+      width: 3.5px;
+      background-color: #06b6d4;
+      border-radius: 0 3px 3px 0;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.8);
+    }
+
+    /* Drawer Transitions */
+    .drawer-open {
+      transform: translateX(0%) !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+    .drawer-closed {
+      transform: translateX(100%) !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  </style>
+</head>
+<body class="bg-cyber-950 text-slate-100 font-sans h-screen max-h-screen flex flex-col bg-mesh antialiased select-none overflow-hidden">
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="h-16 border-b border-white/5 bg-cyber-900/75 backdrop-blur-xl px-6 flex items-center justify-between sticky top-0 z-40">
+    <!-- Brand Logo -->
+    <div class="flex items-center space-x-3.5">
+      <div class="relative flex items-center justify-center">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 via-teal-400 to-blue-600 flex items-center justify-center font-extrabold text-cyber-950 text-xl shadow-lg shadow-cyan-500/25">
+          P
+        </div>
+        <span class="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </span>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="font-extrabold text-base tracking-tight text-white">packetinstall</span>
+          <span class="px-1.5 py-0.5 text-[10px] font-mono font-semibold uppercase rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">v1.2</span>
+          <span class="px-1.5 py-0.5 text-[10px] font-mono text-slate-400 rounded bg-white/5 border border-white/5">Windows Native</span>
+        </div>
+        <p class="text-[11px] text-slate-400 font-medium">Smart Tools, Agent Skills, Project Auditor & Offline ZIP Bundler</p>
+      </div>
+    </div>
+
+    <!-- Center Search Bar -->
+    <div class="hidden md:flex items-center w-96 relative">
+      <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 pointer-events-none"></i>
+      <input type="text" id="globalSearch" placeholder="Search 200+ tools, skills, projects (Ctrl+K)..." 
+        oninput="handleGlobalSearch(this.value)"
+        class="w-full bg-cyber-950/80 border border-white/10 rounded-xl pl-10 pr-10 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/50 transition font-medium">
+      <kbd class="absolute right-3 top-2 text-[10px] font-mono text-slate-500 bg-white/5 px-1.5 py-0.5 rounded border border-white/10">ESC</kbd>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex items-center space-x-3">
+      <div id="scanTimeBadge" class="hidden sm:flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-white/5 border border-white/5 text-xs text-slate-300 font-mono">
+        <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+        <span id="scanTimeText">Scanning...</span>
+      </div>
+
+      <!-- Quick Install Package Button -->
+      <button onclick="openInstallModal()" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-cyber-850 hover:bg-cyber-800 text-cyan-300 border border-cyan-500/20 text-xs font-semibold transition active:scale-95 shadow-sm">
+        <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-cyan-400"></i>
+        <span>Install Tool</span>
+      </button>
+
+      <button onclick="refreshData()" title="Re-scan system" class="p-2 rounded-lg bg-cyber-850 hover:bg-cyber-800 text-slate-300 hover:text-white border border-white/5 transition flex items-center">
+        <i data-lucide="rotate-cw" id="refreshIcon" class="w-4 h-4"></i>
+      </button>
+
+      <!-- Selective Export Button -->
+      <button onclick="openExportModal()" class="flex items-center space-x-2 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-cyber-950 font-bold text-xs shadow-md shadow-cyan-500/20 transition active:scale-95">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+        <span>Export Options</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= APPLICATION SHELL ================= -->
+  <div class="flex-1 flex overflow-hidden min-h-0">
+    <!-- Left Navigation Sidebar (100% Fixed & Sticky) -->
+    <aside class="w-64 border-r border-white/5 bg-cyber-900/40 backdrop-blur-xl flex flex-col justify-between p-4 shrink-0 h-full min-h-0 overflow-y-auto">
+      <div class="space-y-1.5">
+        <div class="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">Navigation</div>
+        
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition nav-item-active">
+          <i data-lucide="layout-grid" class="w-4 h-4 text-cyan-400"></i>
+          <span>Dashboard</span>
+        </button>
+
+        <button onclick="switchTab('projects')" id="nav-projects" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition">
+          <div class="flex items-center space-x-3">
+            <i data-lucide="folder-git-2" class="w-4 h-4 text-amber-400"></i>
+            <span>Project Auditor</span>
+          </div>
+          <span id="badgeProjectsCount" class="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/20">DRIVE</span>
+        </button>
+
+        <button onclick="switchTab('tools')" id="nav-tools" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition">
+          <div class="flex items-center space-x-3">
+            <i data-lucide="terminal" class="w-4 h-4 text-cyan-400"></i>
+            <span>Dev Tools & Manage</span>
+          </div>
+          <span id="badgeToolsCount" class="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/20">0</span>
+        </button>
+
+        <button onclick="switchTab('skills')" id="nav-skills" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition">
+          <div class="flex items-center space-x-3">
+            <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+            <span>Agent Skills</span>
+          </div>
+          <span id="badgeSkillsCount" class="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">0</span>
+        </button>
+
+        <button onclick="switchTab('mcp')" id="nav-mcp" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition">
+          <div class="flex items-center space-x-3">
+            <i data-lucide="cable" class="w-4 h-4 text-violet-400"></i>
+            <span>MCP Servers</span>
+          </div>
+          <span id="badgeMcpCount" class="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-violet-500/15 text-violet-300 border border-violet-500/20">0</span>
+        </button>
+
+        <button onclick="switchTab('sync')" id="nav-sync" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/5 transition">
+          <i data-lucide="arrow-left-right" class="w-4 h-4 text-teal-400"></i>
+          <span>Machine Sync & Diff</span>
+        </button>
+      </div>
+
+      <!-- Machine Host Info Box -->
+      <div class="glass-card p-3.5 rounded-xl space-y-2 border border-white/5">
+        <div class="flex items-center justify-between text-[11px] text-slate-400">
+          <span class="font-medium">Host Machine</span>
+          <span class="text-emerald-400 font-mono text-[10px] flex items-center space-x-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
+            <span>Online</span>
+          </span>
+        </div>
+        <div class="text-xs font-bold text-slate-200 truncate">Windows 11 Workstation</div>
+        <div class="flex items-center justify-between text-[10px] text-slate-500 pt-1 border-t border-white/5 font-mono">
+          <span>Engine: Go 1.27</span>
+          <span>Zero-Install</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Dynamic Viewport -->
+    <main class="flex-1 h-full min-h-0 overflow-y-auto p-8 space-y-6">
+      
+      <!-- ================= VIEW 1: DASHBOARD ================= -->
+      <section id="view-dashboard" class="space-y-6">
+        <!-- Hero Banner with Ambient Glow -->
+        <div class="glass-card p-6 rounded-2xl relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border border-white/5">
+          <div class="space-y-2 z-10 max-w-xl">
+            <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-xs font-semibold">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+              <span>Environment Status: 98/100 Optimal</span>
+            </div>
+            <h2 class="text-2xl font-extrabold text-white tracking-tight">AI & Developer Environment Hub</h2>
+            <p class="text-xs text-slate-400 leading-relaxed">Centralized inventory of local runtimes, package managers (Choco, Scoop, NPM), autonomous AI coding agents (Claude Code, Codex, OMP), and code project dependencies across your drives.</p>
+          </div>
+          <div class="flex items-center space-x-3 z-10">
+            <button onclick="switchTab('projects')" class="px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-semibold transition flex items-center space-x-2">
+              <i data-lucide="folder-search" class="w-4 h-4 text-amber-400"></i>
+              <span>Audit Projects</span>
+            </button>
+            <button onclick="openExportModal()" class="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-cyber-950 text-xs font-bold transition flex items-center space-x-2 shadow-lg shadow-cyan-500/20">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Export Workstation</span>
+            </button>
+          </div>
+          <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div onclick="switchTab('tools')" class="glass-card p-5 rounded-2xl space-y-3 cursor-pointer hover:scale-[1.02] transition border border-white/5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Dev Packages</span>
+              <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                <i data-lucide="package" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="flex items-baseline space-x-2">
+              <div id="statTotalTools" class="text-3xl font-extrabold text-white font-mono">-</div>
+              <span class="text-[11px] text-cyan-400 font-medium">Choco & NPM</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Installed runtimes & tools</p>
+          </div>
+
+          <div onclick="switchTab('projects')" class="glass-card p-5 rounded-2xl space-y-3 cursor-pointer hover:scale-[1.02] transition border border-white/5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Scanned Projects</span>
+              <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                <i data-lucide="folder-git-2" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="flex items-baseline space-x-2">
+              <div id="statTotalProjects" class="text-3xl font-extrabold text-amber-400 font-mono">13</div>
+              <span class="text-[11px] text-amber-400 font-medium">In D:\IdeaSideProject</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Full dependency audit</p>
+          </div>
+
+          <div onclick="switchTab('skills')" class="glass-card p-5 rounded-2xl space-y-3 cursor-pointer hover:scale-[1.02] transition border border-white/5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Agent Skills</span>
+              <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <i data-lucide="sparkles" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="flex items-baseline space-x-2">
+              <div id="statTotalSkills" class="text-3xl font-extrabold text-emerald-400 font-mono">-</div>
+              <span class="text-[11px] text-emerald-400 font-medium">Skills cataloged</span>
+            </div>
+            <p class="text-[11px] text-slate-400">From ~/.agent/skills & ~/.omp</p>
+          </div>
+
+          <div onclick="switchTab('mcp')" class="glass-card p-5 rounded-2xl space-y-3 cursor-pointer hover:scale-[1.02] transition border border-white/5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">MCP Connectors</span>
+              <div class="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                <i data-lucide="cable" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="flex items-baseline space-x-2">
+              <div id="statTotalMcp" class="text-3xl font-extrabold text-violet-400 font-mono">-</div>
+              <span class="text-[11px] text-violet-400 font-medium">Active servers</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Claude & Cursor configs</p>
+          </div>
+        </div>
+
+        <!-- Featured AI Agents Widget -->
+        <div class="space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-2">
+            <i data-lucide="bot" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>Autonomous AI Coding Agents Status</span>
+          </h3>
+          <div id="agentCardsGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 2: PROJECT & DRIVE SCANNER ================= -->
+      <section id="view-projects" class="space-y-5 hidden">
+        <div class="glass-card p-5 rounded-2xl border border-white/5 space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+                <i data-lucide="folder-search" class="w-5 h-5 text-amber-400"></i>
+                <span>Drive & Project Dependency Auditor</span>
+              </h2>
+              <p class="text-xs text-slate-400">Scan any drive or directory to discover codebases, detect languages/frameworks, and audit dependencies for outdated versions or vulnerabilities.</p>
+            </div>
+            
+            <button onclick="triggerProjectScan()" id="btnScanProjects" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-cyber-950 font-extrabold text-xs shadow-lg shadow-amber-500/20 transition flex items-center space-x-2 active:scale-95 shrink-0">
+              <i data-lucide="scan" class="w-4 h-4 fill-cyber-950"></i>
+              <span>Scan Projects Now</span>
+            </button>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center gap-3 pt-2 border-t border-white/5">
+            <div class="w-full relative">
+              <i data-lucide="hard-drive" class="w-4 h-4 text-slate-500 absolute left-3.5 top-2.5"></i>
+              <input type="text" id="projectScanPathInput" value="D:\IdeaSideProject" class="w-full bg-cyber-950/80 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-amber-500 transition">
+            </div>
+            <div class="flex items-center space-x-1.5 shrink-0 text-xs">
+              <span class="text-slate-500 text-[11px]">Quick:</span>
+              <button onclick="setScanPath('D:\\IdeaSideProject')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 font-mono text-[11px]">D:\IdeaSideProject</button>
+              <button onclick="setScanPath('D:\\')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 font-mono text-[11px]">D:\</button>
+              <button onclick="setScanPath('C:\\Users\\Dev')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 font-mono text-[11px]">C:\Users\Dev</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-2">
+              <i data-lucide="layers" class="w-3.5 h-3.5 text-amber-400"></i>
+              <span>Discovered Code Projects (<span id="projectCountLabel">0</span>)</span>
+            </h3>
+            <span id="projectScanStats" class="text-[11px] font-mono text-slate-500">Ready to audit</span>
+          </div>
+
+          <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 3: DEV TOOLS & HEALTH (MANAGE/UNINSTALL/SWITCH VERSION) ================= -->
+      <section id="view-tools" class="space-y-4 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-white">Installed Dev Packages & CLIs</h2>
+            <p class="text-xs text-slate-400">Fast-path scan of Chocolatey, Scoop, and NPM global installations. Upgrade, downgrade, or remove tools.</p>
+          </div>
+          <!-- Filter Chips -->
+          <div class="flex items-center space-x-2 bg-cyber-900 p-1 rounded-xl border border-white/5 text-xs">
+            <button onclick="filterTools('all')" id="toolFilter-all" class="px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-400 font-semibold">All (<span id="countFilterAll">0</span>)</button>
+            <button onclick="filterTools('choco')" id="toolFilter-choco" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white">Chocolatey</button>
+            <button onclick="filterTools('npm')" id="toolFilter-npm" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white">NPM Global</button>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl overflow-hidden border border-white/5">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-cyber-900/90 text-slate-400 font-semibold uppercase tracking-wider text-[10px] border-b border-white/5">
+              <tr>
+                <th class="p-3.5">Tool</th>
+                <th class="p-3.5">Manager</th>
+                <th class="p-3.5">Installed Version</th>
+                <th class="p-3.5">Path</th>
+                <th class="p-3.5 text-right">Actions (Upgrade/Downgrade/Remove)</th>
+              </tr>
+            </thead>
+            <tbody id="toolsTableBody" class="divide-y divide-white/5 text-slate-300">
+              <tr><td colspan="5" class="p-6 text-center text-slate-500">Scanning installed packages...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= VIEW 4: AGENT SKILLS (TOOL SEPARATION & VIVIDKIT DOCS) ================= -->
+      <section id="view-skills" class="space-y-4 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+              <i data-lucide="sparkles" class="w-5 h-5 text-emerald-400"></i>
+              <span>AI Agent Skills & Commands Hub</span>
+            </h2>
+            <p class="text-xs text-slate-400">Duyệt và khám phá kỹ năng trực quan theo từng hệ sinh thái (ClaudeKit, OpenCode, Codex). Không cần nhớ cú pháp terminal.</p>
+          </div>
+          <div class="flex items-center space-x-2 text-xs font-mono">
+            <span class="text-slate-400">Total Skills:</span>
+            <span id="skillsTotalBadge" class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-bold">0</span>
+          </div>
+        </div>
+
+        <!-- Ecosystem Origin Filter Tabs -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/5">
+          <div class="flex items-center space-x-1.5 bg-cyber-900 p-1 rounded-xl border border-white/5 text-xs">
+            <button onclick="filterSkillsByOrigin('all')" id="originBtn-all" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold">Tất Cả (<span id="countOriginAll">0</span>)</button>
+            <button onclick="filterSkillsByOrigin('claudekit')" id="originBtn-claudekit" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white font-semibold flex items-center space-x-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span>
+              <span>ClaudeKit (<span id="countOriginCk">0</span>)</span>
+            </button>
+            <button onclick="filterSkillsByOrigin('opencode')" id="originBtn-opencode" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white font-medium flex items-center space-x-1.5">
+              <span class="w-2 h-2 rounded-full bg-cyan-400 inline-block"></span>
+              <span>OpenCode / OMP (<span id="countOriginOmp">0</span>)</span>
+            </button>
+            <button onclick="filterSkillsByOrigin('codex')" id="originBtn-codex" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white font-medium flex items-center space-x-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+              <span>Codex (<span id="countOriginCodex">0</span>)</span>
+            </button>
+            <button onclick="filterSkillsByOrigin('universal')" id="originBtn-universal" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white font-medium">Community</button>
+          </div>
+
+          <!-- ClaudeKit VividKit-Style Tier Filter -->
+          <div id="ckTierFilterBar" class="flex items-center space-x-1 bg-cyber-950 p-1 rounded-xl border border-white/5 text-[11px] font-mono">
+            <span class="text-slate-500 px-1.5">Level:</span>
+            <button onclick="filterSkillsByTier('all')" id="tierBtn-all" class="px-2 py-0.5 rounded bg-white/10 text-white font-semibold">All</button>
+            <button onclick="filterSkillsByTier('beginner')" id="tierBtn-beginner" class="px-2 py-0.5 rounded text-slate-400 hover:text-emerald-300">🟢 Bắt đầu</button>
+            <button onclick="filterSkillsByTier('intermediate')" id="tierBtn-intermediate" class="px-2 py-0.5 rounded text-slate-400 hover:text-amber-300">🟡 Nâng cao</button>
+            <button onclick="filterSkillsByTier('pro')" id="tierBtn-pro" class="px-2 py-0.5 rounded text-slate-400 hover:text-rose-300">🔴 Pro</button>
+          </div>
+        </div>
+
+        <div id="skillsCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Populated via JS with rich icons -->
+        </div>
+      </section>
+
+      <!-- ================= VIEW 5: MCP SERVERS ================= -->
+      <section id="view-mcp" class="space-y-4 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-white">Model Context Protocol (MCP) Servers</h2>
+            <p class="text-xs text-slate-400">External tool connectors configured in Claude Desktop and Cursor IDE.</p>
+          </div>
+        </div>
+
+        <div id="mcpCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Populated via JS -->
+        </div>
+      </section>
+
+      <!-- ================= VIEW 6: MACHINE SYNC & DIFF (AUTO-INSTALL 1-CLICK!) ================= -->
+      <section id="view-sync" class="space-y-6 hidden">
+        <div>
+          <h2 class="text-lg font-bold text-white">Cross-Machine Profile Synchronization</h2>
+          <p class="text-xs text-slate-400">Inspect current machine's declarative YAML, or paste a target profile to preview diff and execute automated 1-click batch installation.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="glass-card p-5 rounded-2xl space-y-3 flex flex-col border border-white/5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <i data-lucide="file-code" class="w-4 h-4 text-cyan-400"></i>
+                <h3 class="font-bold text-xs uppercase tracking-wider text-slate-200">Current Machine Profile (YAML)</h3>
+              </div>
+              <button onclick="copyProfileYaml()" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-medium flex items-center space-x-1">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span id="copyYamlBtnText">Copy YAML</span>
+              </button>
+            </div>
+            <textarea id="currentProfileYamlText" readonly class="flex-1 w-full min-h-[360px] bg-cyber-950/90 border border-white/5 rounded-xl p-3.5 font-mono text-[11px] text-slate-300 focus:outline-none select-text resize-none"></textarea>
+          </div>
+
+          <div class="glass-card p-5 rounded-2xl space-y-3 flex flex-col border border-white/5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <i data-lucide="git-compare" class="w-4 h-4 text-amber-400"></i>
+                <h3 class="font-bold text-xs uppercase tracking-wider text-slate-200">Compare & Calculate Diff</h3>
+              </div>
+              <span class="text-[10px] text-slate-500">Paste another machine's YAML</span>
+            </div>
+            <textarea id="importProfileInput" placeholder="Paste another machine's packetinstall.yaml here..." class="w-full h-32 bg-cyber-950/90 border border-white/5 rounded-xl p-3.5 font-mono text-[11px] text-slate-200 placeholder-slate-600 focus:outline-none focus:border-amber-500/50 resize-none"></textarea>
+            
+            <button onclick="runProfileDiff()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-cyber-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition flex items-center justify-center space-x-2">
+              <i data-lucide="play" class="w-3.5 h-3.5 fill-cyber-950"></i>
+              <span>Calculate Missing Tools & Generate Script</span>
+            </button>
+
+            <!-- Diff Output Box with Auto-Install Execution -->
+            <div id="diffResultBox" class="hidden flex-1 p-4 rounded-xl bg-cyber-950 border border-white/5 space-y-3 font-mono text-xs overflow-y-auto max-h-72">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+
+    <!-- ================= GLOBAL DRAWER BACKDROP (CLICK OUTSIDE TO CLOSE) ================= -->
+    <div id="drawerBackdrop" onclick="closeAllDrawers()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300 opacity-0 pointer-events-none"></div>
+    <!-- ================= PROJECT DEPENDENCY INSPECTOR DRAWER ================= -->
+    <div id="projectDrawer" class="drawer-closed fixed top-0 right-0 h-full w-full max-w-lg bg-cyber-900/95 border-l border-white/10 shadow-2xl backdrop-blur-2xl z-50 flex flex-col transition-all duration-300 ease-out">
+      <div class="p-5 border-b border-white/5 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+            <i data-lucide="folder-git-2" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 id="projDrawerTitle" class="font-bold text-sm text-white truncate max-w-[280px]">Project Dependencies</h3>
+            <span id="projDrawerLangBadge" class="text-[10px] font-mono px-2 py-0.2 rounded bg-white/5 text-amber-300 uppercase font-semibold">TypeScript</span>
+          </div>
+        </div>
+        <button onclick="closeProjectDrawer()" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 p-6 space-y-5 overflow-y-auto">
+        <div id="projHealthCard" class="p-4 rounded-xl border border-white/5 bg-cyber-950/80 flex items-center justify-between">
+          <div>
+            <div class="text-[10px] uppercase font-bold text-slate-400">Project Health Score</div>
+            <div id="projHealthScore" class="text-2xl font-black text-emerald-400 font-mono">100 / 100</div>
+          </div>
+          <div id="projIssueCountBadge" class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            All Clean
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between text-xs font-semibold text-slate-300">
+            <span>Dependencies (<span id="projDepsCountLabel">0</span>)</span>
+            <span class="text-[11px] text-slate-500">Package & Version</span>
+          </div>
+          
+          <div class="bg-cyber-950 rounded-xl border border-white/5 overflow-hidden">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-cyber-900 text-slate-400 text-[10px] uppercase font-bold border-b border-white/5">
+                <tr>
+                  <th class="p-2.5">Package</th>
+                  <th class="p-2.5">Version</th>
+                  <th class="p-2.5 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody id="projDepsTableBody" class="divide-y divide-white/5 text-slate-300 font-mono text-[11px]"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <div class="text-[10px] uppercase font-bold text-slate-400">Audit & Update Command</div>
+          <div class="p-3 bg-cyber-950 border border-white/5 rounded-xl flex items-center justify-between">
+            <code id="projUpdateCmd" class="text-xs font-mono text-cyan-300">npm audit fix</code>
+            <button onclick="copyProjCommand()" class="text-xs text-slate-400 hover:text-cyan-400 font-medium">Copy</button>
+          </div>
+          <button onclick="autoFixCurrentProject()" id="btnAutoFixProj" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 text-dark-950 font-extrabold text-xs transition flex items-center justify-center space-x-1.5 shadow-md shadow-amber-500/20 active:scale-95">
+            <i data-lucide="wrench" class="w-3.5 h-3.5 fill-dark-950"></i>
+            <span>⚡ Auto-Fix All Project Dependencies</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= VIVIDKIT-STYLE SKILL DOCS DRAWER ================= -->
+    <div id="skillDocsDrawer" class="drawer-closed fixed top-0 right-0 h-full w-full max-w-xl bg-cyber-900/95 border-l border-white/10 shadow-2xl backdrop-blur-2xl z-50 flex flex-col transition-all duration-300 ease-out">
+      <!-- Drawer Header -->
+      <div class="p-5 border-b border-white/5 flex items-center justify-between">
+        <div class="flex items-center space-x-3.5">
+          <div id="docsDrawerIconBox" class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+            <i data-lucide="sparkles" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 id="docsDrawerCommand" class="font-extrabold text-base text-white font-mono">/ck:cook</h3>
+              <span id="docsDrawerTierBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/25 font-bold">🟡 Nâng cao</span>
+              <span id="docsDrawerAuthorBadge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">ClaudeKit</span>
+            </div>
+            <p id="docsDrawerArgHint" class="text-xs text-slate-400 font-mono mt-0.5">[task] [--fast|--parallel|--tdd]</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="copyDocsSkillCommand()" class="px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold flex items-center space-x-1.5 transition">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span id="docsCopyBtnText">Copy Lệnh</span>
+          </button>
+          <button onclick="closeSkillDocsDrawer()" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Drawer Body -->
+      <div class="flex-1 p-6 space-y-6 overflow-y-auto">
+        <!-- 1. Overview Section -->
+        <div class="space-y-2">
+          <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Mô Tả & Cách Dùng</div>
+          <p id="docsDrawerDesc" class="text-xs text-slate-200 leading-relaxed bg-cyber-950/80 p-4 rounded-xl border border-white/5 font-normal">
+            Triển khai tính năng với quy trình có cấu trúc, lập kế hoạch và sinh mã nguồn tự động.
+          </p>
+        </div>
+
+        <!-- 2. Flags & Parameters Section (With Exact Meaning & 1-Click Append) -->
+        <div id="docsFlagsSection" class="space-y-2.5">
+          <div class="flex items-center justify-between text-[10px] uppercase font-bold text-cyan-400 tracking-wider">
+            <span class="flex items-center space-x-1.5">
+              <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+              <span>Tham Số & Flags Hỗ Trợ</span>
+            </span>
+            <span id="docsFlagsCountBadge" class="text-[10px] font-mono text-slate-400">0 flags</span>
+          </div>
+          <div id="docsFlagsContainer" class="space-y-2">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+        <!-- 2. Interactive Example Prompts (Click to Copy!) -->
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+            <span>Ví Dụ Lệnh Thực Tế (Click Để Copy)</span>
+            <span class="text-cyan-400 font-mono text-[10px]">1-Click Copy</span>
+          </div>
+          <div id="docsExamplesContainer" class="space-y-2 font-mono text-xs"></div>
+        </div>
+
+        <!-- 3. Pro Tips Box (Like VividKit) -->
+        <div class="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 space-y-2 text-xs">
+          <div class="font-bold text-cyan-300 flex items-center space-x-1.5">
+            <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i>
+            <span>Mẹo Chuyên Nghiệp Từ ClaudeKit</span>
+          </div>
+          <ul class="text-[11px] text-slate-300 space-y-1.5 list-disc list-inside">
+            <li>Sử dụng <code class="text-cyan-300 font-mono">--fast</code> để bỏ qua nghiên cứu nếu đã có kế hoạch sẵn.</li>
+            <li>Tham chiếu file với <code class="text-cyan-300 font-mono">@plan.md</code> để agent nạp trực tiếp ngữ cảnh.</li>
+            <li>Dùng <code class="text-cyan-300 font-mono">/clear</code> để xóa sạch lịch sử token trước khi triển khai tác vụ mới.</li>
+          </ul>
+        </div>
+
+        <!-- 4. Full Markdown Documentation -->
+        <div class="space-y-2">
+          <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tài Liệu Chi Tiết (SKILL.md)</div>
+          <div id="docsMarkdownBody" class="p-4 rounded-xl bg-cyber-950 border border-white/5 text-xs text-slate-300 space-y-3 font-mono leading-relaxed whitespace-pre-wrap max-h-80 overflow-y-auto"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= INSTALL PACKAGE MODAL ================= -->
+    <div id="installModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+      <div class="glass-card w-full max-w-md p-6 rounded-2xl border border-white/10 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            </div>
+            <h3 class="font-bold text-sm text-white">Install New Tool or Package</h3>
+          </div>
+          <button onclick="closeInstallModal()" class="text-slate-500 hover:text-white">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-400">Select your preferred package manager and enter package identifier to install in the background.</p>
+
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block text-slate-400 text-[11px] font-semibold uppercase mb-1">Package Manager</label>
+            <div class="grid grid-cols-3 gap-2">
+              <button type="button" onclick="selectInstallerMgr('npm')" id="btnMgr-npm" class="py-2 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">NPM (Global)</button>
+              <button type="button" onclick="selectInstallerMgr('choco')" id="btnMgr-choco" class="py-2 rounded-lg bg-white/5 text-slate-400 border border-white/5 font-semibold hover:text-white">Chocolatey</button>
+              <button type="button" onclick="selectInstallerMgr('scoop')" id="btnMgr-scoop" class="py-2 rounded-lg bg-white/5 text-slate-400 border border-white/5 font-semibold hover:text-white">Scoop</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-slate-400 text-[11px] font-semibold uppercase mb-1">Package Name</label>
+            <input type="text" id="installPkgInput" placeholder="e.g. tsx, ripgrep, @anthropic-ai/claude-code" class="w-full bg-cyber-950 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white font-mono focus:outline-none focus:border-cyan-500">
+          </div>
+        </div>
+
+        <div id="installConsoleOutput" class="hidden p-3 bg-cyber-950 border border-white/5 rounded-xl font-mono text-[11px] text-slate-300 max-h-36 overflow-y-auto whitespace-pre-wrap"></div>
+
+        <div class="flex space-x-2 pt-2">
+          <button onclick="executePackageInstall()" id="btnExecuteInstall" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 text-cyber-950 font-extrabold text-xs transition shadow-lg shadow-cyan-500/20">
+            Run Installation
+          </button>
+          <button onclick="closeInstallModal()" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SWITCH VERSION MODAL (UPGRADE / DOWNGRADE) ================= -->
+    <div id="versionModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+      <div class="glass-card w-full max-w-md p-6 rounded-2xl border border-white/10 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <i data-lucide="arrow-up-down" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-white">Upgrade or Downgrade Tool</h3>
+              <p id="versionModalPkgName" class="text-[11px] text-slate-400 font-mono">package-name</p>
+            </div>
+          </div>
+          <button onclick="closeVersionModal()" class="text-slate-500 hover:text-white">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-400">Specify any target version to install (e.g. <code class="text-cyan-300">latest</code>, <code class="text-amber-300">2.1.246</code>, <code class="text-amber-300">14.0.0</code>) or select latest release.</p>
+
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block text-slate-400 text-[11px] font-semibold uppercase mb-1">Target Version</label>
+            <input type="text" id="targetVersionInput" placeholder="latest or specific version number" class="w-full bg-cyber-950 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white font-mono focus:outline-none focus:border-amber-500">
+          </div>
+          <div class="flex space-x-2">
+            <button onclick="setVersionInput('latest')" class="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-cyan-400 font-mono text-[11px]">Latest</button>
+            <button onclick="setVersionInput('lts')" class="px-2.5 py-1 rounded bg-white/5 hover:bg-white/10 text-emerald-400 font-mono text-[11px]">LTS</button>
+          </div>
+        </div>
+
+        <div id="versionConsoleOutput" class="hidden p-3 bg-cyber-950 border border-white/5 rounded-xl font-mono text-[11px] text-slate-300 max-h-36 overflow-y-auto whitespace-pre-wrap"></div>
+
+        <div class="flex space-x-2 pt-2">
+          <button onclick="executeSwitchVersion()" id="btnExecuteVersion" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 text-cyber-950 font-extrabold text-xs transition shadow-lg shadow-amber-500/20">
+            Apply Version Switch
+          </button>
+          <button onclick="closeVersionModal()" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SELECTIVE EXPORT & ZIP BUNDLE MODAL ================= -->
+    <div id="exportModal" class="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+      <div class="glass-card w-full max-w-2xl p-6 rounded-2xl border border-white/10 space-y-5 shadow-2xl max-h-[85vh] flex flex-col">
+        <div class="flex items-center justify-between border-b border-white/5 pb-3">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <i data-lucide="archive" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-white">Export Workstation Configuration</h3>
+              <p class="text-[11px] text-slate-400">Choose items to include, export as lightweight YAML or full offline ZIP bundle.</p>
+            </div>
+          </div>
+          <button onclick="closeExportModal()" class="text-slate-500 hover:text-white">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Format Selector -->
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <div onclick="selectExportFormat('yaml')" id="formatCard-yaml" class="p-3.5 rounded-xl border border-cyan-500/40 bg-cyan-500/10 cursor-pointer transition space-y-1">
+            <div class="font-bold text-cyan-300 flex items-center space-x-1.5">
+              <i data-lucide="file-code" class="w-4 h-4"></i>
+              <span>Declarative YAML Manifest</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Lightweight text file (~5KB). Requires internet on target to fetch packages.</p>
+          </div>
+
+          <div onclick="selectExportFormat('zip')" id="formatCard-zip" class="p-3.5 rounded-xl border border-white/10 bg-white/5 hover:border-cyan-500/30 cursor-pointer transition space-y-1">
+            <div class="font-bold text-white flex items-center space-x-1.5">
+              <i data-lucide="package" class="w-4 h-4 text-amber-400"></i>
+              <span>Portable Offline ZIP Bundle</span>
+            </div>
+            <p class="text-[11px] text-slate-400">Packages manifest + offline skill files + <code>install.ps1</code> auto-installer script.</p>
+          </div>
+        </div>
+
+        <!-- Checklists of Items to Include -->
+        <div class="flex-1 overflow-y-auto space-y-4 pr-1 text-xs">
+          <!-- Tools Checklist -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between font-semibold text-slate-300">
+              <span>Tools & Packages (<span id="countSelectedTools">0</span> selected)</span>
+              <button onclick="toggleAllTools()" class="text-cyan-400 hover:underline text-[11px]">Toggle All</button>
+            </div>
+            <div id="exportToolsChecklist" class="grid grid-cols-2 gap-1.5 max-h-36 overflow-y-auto bg-cyber-950 p-2.5 rounded-xl border border-white/5 text-[11px] font-mono"></div>
+          </div>
+
+          <!-- Skills Checklist -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between font-semibold text-slate-300">
+              <span>Agent Skills (<span id="countSelectedSkills">0</span> selected)</span>
+              <button onclick="toggleAllSkills()" class="text-emerald-400 hover:underline text-[11px]">Toggle All</button>
+            </div>
+            <div id="exportSkillsChecklist" class="grid grid-cols-2 gap-1.5 max-h-36 overflow-y-auto bg-cyber-950 p-2.5 rounded-xl border border-white/5 text-[11px] font-mono"></div>
+          </div>
+        </div>
+
+        <!-- Action Footer -->
+        <div class="pt-3 border-t border-white/5 flex items-center justify-between">
+          <div class="text-[11px] text-slate-400 font-mono">Secrets automatically masked (sk-ant-... ➔ ${ENV})</div>
+          <div class="flex space-x-2">
+            <button onclick="executeExportDownload()" id="btnDownloadExport" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 text-cyber-950 font-extrabold text-xs shadow-lg shadow-cyan-500/20 transition active:scale-95">
+              Download YAML
+            </button>
+            <button onclick="closeExportModal()" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 px-4 py-2.5 rounded-xl bg-cyber-900 border border-cyan-500/30 text-white text-xs font-semibold shadow-2xl flex items-center space-x-2 translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <i data-lucide="check-circle" class="w-4 h-4 text-cyan-400"></i>
+    <span id="toastMessage">Action completed</span>
+  </div>
+
+  <!-- JavaScript Application Logic -->
+  <script>
+    let appState = {
+      packages: [],
+      skills: [],
+      mcp_servers: [],
+      duration_ms: 0,
+    };
+    let projectsData = [];
+    let selectedManagerForInstall = 'npm';
+    let targetToolForVersion = null;
+    let exportFormat = 'yaml'; // 'yaml' or 'zip'
+
+    async function loadInitialData() {
+      try {
+        const icon = document.getElementById('refreshIcon');
+        if (icon) icon.classList.add('animate-spin');
+
+        const res = await fetch('/api/scan');
+        appState = await res.json();
+
+        document.getElementById('scanTimeText').innerText = `${appState.duration_ms}ms scan`;
+        document.getElementById('statTotalTools').innerText = appState.packages ? appState.packages.length : 0;
+        document.getElementById('statTotalSkills').innerText = appState.skills ? appState.skills.length : 0;
+        document.getElementById('statTotalMcp').innerText = appState.mcp_servers ? appState.mcp_servers.length : 0;
+
+        document.getElementById('badgeToolsCount').innerText = appState.packages ? appState.packages.length : 0;
+        document.getElementById('badgeSkillsCount').innerText = appState.skills ? appState.skills.length : 0;
+        document.getElementById('badgeMcpCount').innerText = appState.mcp_servers ? appState.mcp_servers.length : 0;
+
+        renderDashboardAgents();
+        renderToolsTable();
+        renderSkillsCards();
+        renderMcpCards();
+        loadProfileYamlPreview();
+
+        if (icon) icon.classList.remove('animate-spin');
+        lucide.createIcons();
+
+        triggerProjectScan();
+      } catch (err) {
+        console.error('Scan error:', err);
+        showToast('Error connecting to backend scanner: ' + err);
+      }
+    }
+
+    // ================= ICON HELPERS FOR SKILLS & TOOLS =================
+    function getSkillIcon(name) {
+      const n = name.toLowerCase();
+      if (n.includes('think') || n.includes('brain') || n.includes('context') || n.includes('fable')) return { icon: 'brain', color: 'text-violet-400', bg: 'bg-violet-500/10 border-violet-500/20' };
+      if (n.includes('review') || n.includes('debug') || n.includes('test') || n.includes('qa')) return { icon: 'shield-check', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' };
+      if (n.includes('frontend') || n.includes('backend') || n.includes('code') || n.includes('fullstack')) return { icon: 'code-2', color: 'text-cyan-400', bg: 'bg-cyan-500/10 border-cyan-500/20' };
+      if (n.includes('design') || n.includes('aesthetic') || n.includes('styling') || n.includes('art')) return { icon: 'palette', color: 'text-pink-400', bg: 'bg-pink-500/10 border-pink-500/20' };
+      if (n.includes('browser') || n.includes('chrome') || n.includes('computer')) return { icon: 'globe', color: 'text-teal-400', bg: 'bg-teal-500/10 border-teal-500/20' };
+      if (n.includes('database') || n.includes('sql') || n.includes('db')) return { icon: 'database', color: 'text-amber-400', bg: 'bg-amber-500/10 border-amber-500/20' };
+      if (n.includes('git') || n.includes('worktree') || n.includes('ship') || n.includes('deploy')) return { icon: 'git-branch', color: 'text-orange-400', bg: 'bg-orange-500/10 border-orange-500/20' };
+      if (n.includes('media') || n.includes('video') || n.includes('audio')) return { icon: 'film', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20' };
+      return { icon: 'sparkles', color: 'text-cyan-300', bg: 'bg-cyan-500/10 border-cyan-500/20' };
+    }
+
+    function getToolIcon(name) {
+      const n = name.toLowerCase();
+      if (n.includes('python')) return { icon: 'terminal', color: 'text-amber-400' };
+      if (n.includes('git') || n.includes('lazygit')) return { icon: 'git-branch', color: 'text-orange-400' };
+      if (n.includes('docker')) return { icon: 'container', color: 'text-blue-400' };
+      if (n.includes('neovim') || n.includes('vim')) return { icon: 'file-code', color: 'text-emerald-400' };
+      if (n.includes('claude')) return { icon: 'bot', color: 'text-orange-300' };
+      if (n.includes('gemini') || n.includes('google')) return { icon: 'sparkles', color: 'text-cyan-400' };
+      if (n.includes('codex') || n.includes('openai')) return { icon: 'cpu', color: 'text-emerald-300' };
+      return { icon: 'package', color: 'text-slate-400' };
+    }
+
+    // ================= TOOLS TABLE WITH UNINSTALL & VERSION SWITCH =================
+    function renderToolsTable(filter = 'all', searchQuery = '') {
+      const tbody = document.getElementById('toolsTableBody');
+      let list = appState.packages || [];
+
+      if (filter !== 'all') {
+        list = list.filter(p => p.manager === filter);
+      }
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        list = list.filter(p => p.name.toLowerCase().includes(q) || (p.version && p.version.toLowerCase().includes(q)));
+      }
+
+      document.getElementById('countFilterAll').innerText = (appState.packages || []).length;
+
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500">No packages match the filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(p => {
+        const isChoco = p.manager === 'choco';
+        const mgrClass = isChoco 
+          ? 'bg-amber-500/10 text-amber-300 border-amber-500/20' 
+          : 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20';
+        const tIcon = getToolIcon(p.name);
+
+        return `
+          <tr class="hover:bg-white/[0.02] transition group">
+            <td class="p-3.5 font-semibold text-slate-200 flex items-center space-x-2.5">
+              <i data-lucide="${tIcon.icon}" class="w-4 h-4 ${tIcon.color}"></i>
+              <span class="group-hover:text-cyan-300 transition">${p.name}</span>
+            </td>
+            <td class="p-3.5">
+              <span class="px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded border ${mgrClass}">${p.manager}</span>
+            </td>
+            <td class="p-3.5 font-mono text-slate-400 text-xs">v${p.version || 'unknown'}</td>
+            <td class="p-3.5 text-slate-500 text-[11px] truncate max-w-xs font-mono" title="${p.path}">${p.path}</td>
+            <td class="p-3.5 text-right space-x-1.5">
+              <button onclick="autoFixTool('${p.manager}', '${p.name}')" title="1-Click Auto Fix / Upgrade" class="px-2 py-1 rounded bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 text-[11px] font-mono border border-cyan-500/30 transition">
+                <i data-lucide="zap" class="w-3 h-3 inline-block -mt-0.5 text-cyan-400"></i> Fix
+              </button>
+              <button onclick="openVersionModal('${p.manager}', '${p.name}', '${p.version}')" title="Upgrade / Downgrade Version" class="px-2 py-1 rounded bg-white/5 hover:bg-amber-500/20 text-slate-300 hover:text-amber-300 text-[11px] font-mono border border-white/5 transition">
+                <i data-lucide="arrow-up-down" class="w-3 h-3 inline-block -mt-0.5"></i> Version
+              </button>
+              <button onclick="uninstallTool('${p.manager}', '${p.name}')" title="Uninstall package" class="px-2 py-1 rounded bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 text-[11px] font-mono border border-white/5 transition">
+                <i data-lucide="trash-2" class="w-3 h-3 inline-block -mt-0.5"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    async function uninstallTool(manager, pkgName) {
+      if (!confirm(`Are you sure you want to uninstall ${pkgName} (${manager})?`)) return;
+
+      showToast(`Uninstalling ${pkgName}...`);
+      try {
+        const res = await fetch('/api/packages/uninstall', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ manager, package: pkgName })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Successfully uninstalled ${pkgName}`);
+          refreshData();
+        } else {
+          showToast(`Uninstall error: ${data.error || data.output}`);
+        }
+      } catch (err) {
+        showToast('Network error: ' + err);
+      }
+    }
+
+    function openVersionModal(manager, pkgName, currentVer) {
+      targetToolForVersion = { manager, pkgName };
+      document.getElementById('versionModalPkgName').innerText = `${pkgName} (${manager}) — Current: v${currentVer}`;
+      document.getElementById('targetVersionInput').value = '';
+      document.getElementById('versionConsoleOutput').classList.add('hidden');
+      document.getElementById('versionModal').classList.remove('hidden');
+      document.getElementById('targetVersionInput').focus();
+    }
+
+    function closeVersionModal() {
+      document.getElementById('versionModal').classList.add('hidden');
+    }
+
+    function setVersionInput(val) {
+      document.getElementById('targetVersionInput').value = val;
+    }
+
+    async function executeSwitchVersion() {
+      if (!targetToolForVersion) return;
+      const ver = document.getElementById('targetVersionInput').value.trim() || 'latest';
+
+      const btn = document.getElementById('btnExecuteVersion');
+      btn.innerText = 'Switching...';
+      btn.classList.add('opacity-50', 'pointer-events-none');
+
+      const consoleBox = document.getElementById('versionConsoleOutput');
+      consoleBox.classList.remove('hidden');
+      consoleBox.innerText = `Executing version switch for ${targetToolForVersion.pkgName} to ${ver}...\n`;
+
+      try {
+        const res = await fetch('/api/packages/switch-version', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            manager: targetToolForVersion.manager,
+            package: targetToolForVersion.pkgName,
+            version: ver,
+            global: true
+          })
+        });
+        const data = await res.json();
+        consoleBox.innerText += data.output || (data.success ? 'Success!\n' : data.error);
+
+        if (data.success) {
+          showToast(`Version switch complete!`);
+          refreshData();
+        } else {
+          showToast(`Switch failed: ${data.error}`);
+        }
+      } catch (e) {
+        consoleBox.innerText += '\nError: ' + e;
+      } finally {
+        btn.innerText = 'Apply Version Switch';
+        btn.classList.remove('opacity-50', 'pointer-events-none');
+      }
+    }
+
+    async function autoFixTool(manager, pkgName) {
+      showToast(`Auto-fixing ${pkgName}...`);
+      try {
+        const res = await fetch('/api/fix', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'tool',
+            manager: manager,
+            package: pkgName
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ Fixed: ${data.message}`);
+          refreshData();
+        } else {
+          showToast(`Fix failed: ${data.error || data.output}`);
+        }
+      } catch (err) {
+        showToast('Fix network error: ' + err);
+      }
+    }
+
+    async function autoFixCurrentProject() {
+      if (!selectedProjectForDrawer) return;
+      const btn = document.getElementById('btnAutoFixProj');
+      btn.innerText = 'Fixing & Updating...';
+      btn.classList.add('opacity-50', 'pointer-events-none');
+      showToast(`Running auto-fix for ${selectedProjectForDrawer.name}...`);
+
+      try {
+        const res = await fetch('/api/fix', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'project',
+            project_path: selectedProjectForDrawer.path
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ Fixed: ${data.message}`);
+          triggerProjectScan();
+          closeProjectDrawer();
+        } else {
+          showToast(`Fix error: ${data.error || data.output}`);
+        }
+      } catch (e) {
+        showToast('Fix network error: ' + e);
+      } finally {
+        btn.innerText = '⚡ Auto-Fix All Project Dependencies';
+        btn.classList.remove('opacity-50', 'pointer-events-none');
+      }
+    }
+
+    // ================= SKILLS LIST WITH TOOL ORIGINS & VIVIDKIT DOCS =================
+    let activeSkillOrigin = 'all';
+    let activeSkillTier = 'all';
+    let selectedSkillForDocs = null;
+
+    function filterSkillsByOrigin(origin) {
+      activeSkillOrigin = origin;
+      ['all', 'claudekit', 'opencode', 'codex', 'universal'].forEach(o => {
+        const btn = document.getElementById('originBtn-' + o);
+        if (!btn) return;
+        if (o === origin) {
+          btn.className = 'px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg text-slate-400 hover:text-white font-medium flex items-center space-x-1.5';
+        }
+      });
+      renderSkillsCards(document.getElementById('globalSearch').value);
+    }
+
+    function filterSkillsByTier(tier) {
+      activeSkillTier = tier;
+      ['all', 'beginner', 'intermediate', 'pro'].forEach(t => {
+        const btn = document.getElementById('tierBtn-' + t);
+        if (!btn) return;
+        if (t === tier) {
+          btn.className = 'px-2 py-0.5 rounded bg-white/10 text-white font-semibold';
+        } else {
+          btn.className = 'px-2 py-0.5 rounded text-slate-400 hover:text-white';
+        }
+      });
+      renderSkillsCards(document.getElementById('globalSearch').value);
+    }
+
+    function renderSkillsCards(searchQuery = '') {
+      const container = document.getElementById('skillsCardsContainer');
+      let allSkills = appState.skills || [];
+
+      // Update count badges
+      const countCk = allSkills.filter(s => s.tool_origin === 'claudekit').length;
+      const countOmp = allSkills.filter(s => s.tool_origin === 'opencode').length;
+      const countCodex = allSkills.filter(s => s.tool_origin === 'codex').length;
+      
+      const elAll = document.getElementById('countOriginAll');
+      const elCk = document.getElementById('countOriginCk');
+      const elOmp = document.getElementById('countOriginOmp');
+      const elCodex = document.getElementById('countOriginCodex');
+
+      if (elAll) elAll.innerText = allSkills.length;
+      if (elCk) elCk.innerText = countCk;
+      if (elOmp) elOmp.innerText = countOmp;
+      if (elCodex) elCodex.innerText = countCodex;
+
+      let filtered = allSkills;
+
+      // Filter by origin
+      if (activeSkillOrigin !== 'all') {
+        filtered = filtered.filter(s => s.tool_origin === activeSkillOrigin);
+      }
+
+      // Filter by tier
+      if (activeSkillTier !== 'all') {
+        filtered = filtered.filter(s => s.tier === activeSkillTier);
+      }
+
+      // Filter by search query
+      if (searchQuery && searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(s => s.name.toLowerCase().includes(q) || (s.description && s.description.toLowerCase().includes(q)));
+      }
+
+      if (!filtered.length) {
+        container.innerHTML = `<div class="col-span-3 p-12 text-center text-slate-500 font-medium">Không tìm thấy skill nào trong danh mục này.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(s => {
+        const meta = getSkillIcon(s.name);
+        
+        let originBadge = `<span class="px-1.5 py-0.2 rounded text-[9px] font-mono bg-white/5 text-slate-400 border border-white/5">Universal</span>`;
+        if (s.tool_origin === 'claudekit') {
+          originBadge = `<span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">ClaudeKit</span>`;
+        } else if (s.tool_origin === 'opencode') {
+          originBadge = `<span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">OpenCode</span>`;
+        } else if (s.tool_origin === 'codex') {
+          originBadge = `<span class="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Codex</span>`;
+        }
+
+        let tierLabel = '';
+        if (s.tier === 'beginner') tierLabel = '<span class="text-[10px] text-emerald-400 font-mono">🟢 Bắt đầu</span>';
+        if (s.tier === 'intermediate') tierLabel = '<span class="text-[10px] text-amber-400 font-mono">🟡 Nâng cao</span>';
+        if (s.tier === 'pro') tierLabel = '<span class="text-[10px] text-rose-400 font-mono">🔴 Pro</span>';
+
+        return `
+          <div onclick="openSkillDocsDrawer('${s.name}')" class="glass-card p-4 rounded-xl space-y-3 cursor-pointer hover:border-cyan-500/40 transition border border-white/5 flex flex-col justify-between group">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2.5 truncate">
+                  <div class="w-8 h-8 rounded-lg ${meta.bg} flex items-center justify-center shrink-0 shadow-sm">
+                    <i data-lucide="${meta.icon}" class="w-4 h-4 ${meta.color}"></i>
+                  </div>
+                  <div class="truncate">
+                    <div class="font-bold text-xs text-white group-hover:text-cyan-300 transition truncate">${s.command || '/' + s.name}</div>
+                    <div class="text-[10px] text-slate-400 font-mono">${s.name}</div>
+                  </div>
+                </div>
+                <div class="flex flex-col items-end space-y-1 shrink-0">
+                  ${originBadge}
+                  ${tierLabel}
+                </div>
+              </div>
+              <p class="text-[11px] text-slate-400 line-clamp-2 leading-relaxed font-normal">${s.description || 'Autonomous agent workflow skill module'}</p>
+            </div>
+            
+            <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500 font-mono">
+              <span class="truncate max-w-[170px]" title="${s.argument_hint}">${s.argument_hint || s.path.split(/[\\/]/).pop()}</span>
+              <span class="text-cyan-400 group-hover:underline flex items-center space-x-0.5 font-semibold">
+                <span>Xem Docs</span>
+                <i data-lucide="chevron-right" class="w-3 h-3"></i>
+              </span>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function openSkillDocsDrawer(skillName) {
+      const s = (appState.skills || []).find(x => x.name === skillName);
+      if (!s) return;
+      selectedSkillForDocs = s;
+
+      const meta = getSkillIcon(s.name);
+      document.getElementById('docsDrawerCommand').innerText = s.command || '/' + s.name;
+      document.getElementById('docsDrawerArgHint').innerText = s.argument_hint || s.name;
+      document.getElementById('docsDrawerDesc').innerText = s.description || 'Chưa có mô tả ngắn.';
+
+      const iconBox = document.getElementById('docsDrawerIconBox');
+      iconBox.className = `w-10 h-10 rounded-xl ${meta.bg} flex items-center justify-center ${meta.color}`;
+      iconBox.innerHTML = `<i data-lucide="${meta.icon}" class="w-5 h-5"></i>`;
+
+      const tierBadge = document.getElementById('docsDrawerTierBadge');
+      if (s.tier === 'beginner') {
+        tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold';
+        tierBadge.innerText = '🟢 Cơ bản (Beginner)';
+      } else if (s.tier === 'pro') {
+        tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 font-bold';
+        tierBadge.innerText = '🔴 Chuyên nghiệp (Pro)';
+      } else {
+        tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold';
+        tierBadge.innerText = '🟡 Nâng cao (Intermediate)';
+      }
+
+      const authorBadge = document.getElementById('docsDrawerAuthorBadge');
+      authorBadge.innerText = s.tool_origin === 'claudekit' ? 'ClaudeKit Official' : (s.tool_origin === 'opencode' ? 'OpenCode' : (s.tool_origin === 'codex' ? 'Codex' : 'Universal'));
+
+      // Render Flags with Meanings
+      const flagsSection = document.getElementById('docsFlagsSection');
+      const flagsContainer = document.getElementById('docsFlagsContainer');
+      const flagsCountBadge = document.getElementById('docsFlagsCountBadge');
+
+      if (s.flags && s.flags.length > 0) {
+        flagsSection.classList.remove('hidden');
+        flagsCountBadge.innerText = `${s.flags.length} flags`;
+        flagsContainer.innerHTML = s.flags.map(f => `
+          <div class="glass-card p-3 rounded-xl border border-white/5 space-y-1 hover:border-cyan-500/30 transition">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <code class="px-2 py-0.5 rounded-lg bg-cyan-500/15 text-cyan-300 font-mono font-bold text-xs border border-cyan-500/25">${f.name}</code>
+                ${f.values ? `<span class="px-1.5 py-0.2 rounded text-[10px] font-mono bg-white/5 text-amber-300 border border-white/5">${f.values}</span>` : ''}
+              </div>
+              <button onclick="appendFlagToCommand('${f.name}')" title="Thêm cờ này vào câu lệnh" class="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 hover:underline flex items-center space-x-0.5 font-semibold">
+                <span>+ Thêm cờ</span>
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed font-normal">${f.description || 'Tham số điều khiển hành vi cho skill này.'}</p>
+          </div>
+        `).join('');
+      } else {
+        flagsSection.classList.add('hidden');
+      }
+
+      // Render Interactive Examples (Click to copy)
+      const exContainer = document.getElementById('docsExamplesContainer');
+      const examples = s.examples && s.examples.length ? s.examples : [s.command || '/' + s.name];
+      exContainer.innerHTML = examples.map(ex => `
+        <div class="p-2.5 bg-cyber-950 border border-white/5 rounded-xl flex items-center justify-between hover:border-cyan-500/30 transition group">
+          <code class="text-xs text-cyan-300 truncate">${ex}</code>
+          <button onclick="copyText('${ex}')" class="px-2.5 py-1 rounded bg-white/5 hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-300 text-[10px] font-mono transition shrink-0 ml-2 font-semibold">Copy Lệnh</button>
+        </div>
+      `).join('');
+
+      // Render Markdown docs
+      const mdBody = document.getElementById('docsMarkdownBody');
+      mdBody.innerText = s.full_docs || s.description || 'Chưa có tài liệu Markdown chi tiết cho skill này.';
+
+      const drawer = document.getElementById('skillDocsDrawer');
+      drawer.classList.remove('drawer-closed');
+      drawer.classList.add('drawer-open');
+      showBackdrop();
+      lucide.createIcons();
+    }
+
+    function closeSkillDocsDrawer() {
+      const drawer = document.getElementById('skillDocsDrawer');
+      drawer.classList.remove('drawer-open');
+      drawer.classList.add('drawer-closed');
+      selectedSkillForDocs = null;
+      hideBackdrop();
+    }
+
+    function showBackdrop() {
+      const bd = document.getElementById('drawerBackdrop');
+      if (bd) {
+        bd.classList.remove('opacity-0', 'pointer-events-none');
+        bd.classList.add('opacity-100', 'pointer-events-auto');
+      }
+    }
+
+    function hideBackdrop() {
+      const bd = document.getElementById('drawerBackdrop');
+      if (bd) {
+        bd.classList.remove('opacity-100', 'pointer-events-auto');
+        bd.classList.add('opacity-0', 'pointer-events-none');
+      }
+    }
+
+    function closeAllDrawers() {
+      closeProjectDrawer();
+      closeSkillDocsDrawer();
+      closeInstallModal();
+      closeVersionModal();
+      closeExportModal();
+      hideBackdrop();
+    }
+
+    function copyDocsSkillCommand() {
+      if (!selectedSkillForDocs) return;
+      const cmd = selectedSkillForDocs.command || '/' + selectedSkillForDocs.name;
+      navigator.clipboard.writeText(cmd);
+      const btn = document.getElementById('docsCopyBtnText');
+      btn.innerText = 'Đã Copy!';
+      setTimeout(() => btn.innerText = 'Copy Lệnh', 2000);
+      showToast('Đã copy lệnh: ' + cmd);
+    }
+
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt);
+      showToast('Đã copy: ' + txt);
+    }
+
+    function appendFlagToCommand(flagName) {
+      if (!selectedSkillForDocs) return;
+      const baseCmd = selectedSkillForDocs.command || '/' + selectedSkillForDocs.name;
+      const fullCmd = `${baseCmd} ${flagName}`;
+      copyText(fullCmd);
+      showToast(`Đã copy lệnh kèm cờ: ${fullCmd}`);
+    }
+
+    // ================= 1-CLICK AUTOMATED BATCH PROFILE INSTALLER =================
+    let pendingBatchCommands = [];
+
+    async function runProfileDiff() {
+      const yaml = document.getElementById('importProfileInput').value;
+      if (!yaml.trim()) {
+        showToast('Please paste a packetinstall.yaml first!');
+        return;
+      }
+
+      const res = await fetch('/api/profile/diff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-yaml' },
+        body: yaml
+      });
+      const data = await res.json();
+      pendingBatchCommands = data.commands || [];
+
+      const box = document.getElementById('diffResultBox');
+      box.classList.remove('hidden');
+
+      const missingPkgs = data.pending_system_packages ? data.pending_system_packages.length : 0;
+      const missingSkills = data.missing_skills ? data.missing_skills.length : 0;
+      const missingMcp = data.missing_mcp_servers ? data.missing_mcp_servers.length : 0;
+
+      box.innerHTML = `
+        <div class="text-emerald-400 font-bold">✓ Already Installed: ${data.already_installed ? data.already_installed.length : 0} items</div>
+        <div class="text-amber-400">⚡ Missing System Packages: ${missingPkgs}</div>
+        <div class="text-cyan-400">⚡ Missing AI Skills: ${missingSkills}</div>
+        <div class="text-violet-400">⚡ Missing MCP Connectors: ${missingMcp}</div>
+        
+        ${pendingBatchCommands.length ? `
+          <div class="pt-3 border-t border-white/5 space-y-2">
+            <button onclick="executeBatchInstallAll()" id="btnAutoInstall" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 text-cyber-950 font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition flex items-center justify-center space-x-2">
+              <i data-lucide="play" class="w-3.5 h-3.5 fill-cyber-950"></i>
+              <span>🚀 Execute Auto-Install All (${pendingBatchCommands.length} items)</span>
+            </button>
+            <div id="batchInstallLog" class="hidden p-2.5 bg-black/60 rounded text-[11px] font-mono text-cyan-300 max-h-40 overflow-y-auto space-y-1"></div>
+          </div>
+        ` : `<div class="text-emerald-400 pt-2 font-bold">🎉 Workstation is already 100% in sync with this profile!</div>`}
+      `;
+      lucide.createIcons();
+      showToast('Profile diff calculated!');
+    }
+
+    async function executeBatchInstallAll() {
+      if (!pendingBatchCommands.length) return;
+      const btn = document.getElementById('btnAutoInstall');
+      btn.innerText = 'Installing in background...';
+      btn.classList.add('opacity-50', 'pointer-events-none');
+
+      const logBox = document.getElementById('batchInstallLog');
+      logBox.classList.remove('hidden');
+      logBox.innerHTML = `<div>Starting batch installer for ${pendingBatchCommands.length} commands...</div>`;
+
+      try {
+        const res = await fetch('/api/profile/execute-batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ commands: pendingBatchCommands })
+        });
+        const result = await res.json();
+
+        logBox.innerHTML = result.steps.map((s, i) => `
+          <div class="${s.success ? 'text-emerald-400' : 'text-rose-400'}">
+            [${i+1}/${result.total_steps}] ${s.command} ➔ ${s.success ? '✓ Done' : '❌ Failed: ' + s.error}
+          </div>
+        `).join('');
+
+        showToast(`Auto-install completed: ${result.completed_steps}/${result.total_steps} steps`);
+        refreshData();
+      } catch (err) {
+        logBox.innerHTML += `<div class="text-rose-400">Execution failed: ${err}</div>`;
+      } finally {
+        btn.innerText = '✓ Batch Execution Finished';
+      }
+    }
+
+    // ================= SELECTIVE EXPORT & ZIP BUNDLER =================
+    function openExportModal() {
+      document.getElementById('exportModal').classList.remove('hidden');
+      populateExportChecklists();
+    }
+
+    function closeExportModal() {
+      document.getElementById('exportModal').classList.add('hidden');
+    }
+
+    function selectExportFormat(fmt) {
+      exportFormat = fmt;
+      const cardYaml = document.getElementById('formatCard-yaml');
+      const cardZip = document.getElementById('formatCard-zip');
+      const btn = document.getElementById('btnDownloadExport');
+
+      if (fmt === 'yaml') {
+        cardYaml.className = 'p-3.5 rounded-xl border border-cyan-500/40 bg-cyan-500/10 cursor-pointer transition space-y-1';
+        cardZip.className = 'p-3.5 rounded-xl border border-white/10 bg-white/5 hover:border-cyan-500/30 cursor-pointer transition space-y-1';
+        btn.innerText = 'Download packetinstall.yaml';
+      } else {
+        cardZip.className = 'p-3.5 rounded-xl border border-amber-500/40 bg-amber-500/10 cursor-pointer transition space-y-1';
+        cardYaml.className = 'p-3.5 rounded-xl border border-white/10 bg-white/5 hover:border-cyan-500/30 cursor-pointer transition space-y-1';
+        btn.innerText = 'Download Offline ZIP Bundle';
+      }
+    }
+
+    function populateExportChecklists() {
+      const toolsBox = document.getElementById('exportToolsChecklist');
+      const skillsBox = document.getElementById('exportSkillsChecklist');
+
+      toolsBox.innerHTML = (appState.packages || []).map(p => `
+        <label class="flex items-center space-x-2 truncate cursor-pointer hover:text-white">
+          <input type="checkbox" checked value="${p.name}" class="export-tool-chk accent-cyan-500 rounded">
+          <span class="truncate">${p.name}</span>
+        </label>
+      `).join('');
+
+      skillsBox.innerHTML = (appState.skills || []).map(s => `
+        <label class="flex items-center space-x-2 truncate cursor-pointer hover:text-white">
+          <input type="checkbox" checked value="${s.name}" class="export-skill-chk accent-emerald-500 rounded">
+          <span class="truncate">${s.name}</span>
+        </label>
+      `).join('');
+
+      updateSelectedCounts();
+      document.querySelectorAll('.export-tool-chk, .export-skill-chk').forEach(el => el.addEventListener('change', updateSelectedCounts));
+    }
+
+    function updateSelectedCounts() {
+      const tools = Array.from(document.querySelectorAll('.export-tool-chk:checked')).map(c => c.value);
+      const skills = Array.from(document.querySelectorAll('.export-skill-chk:checked')).map(c => c.value);
+      document.getElementById('countSelectedTools').innerText = tools.length;
+      document.getElementById('countSelectedSkills').innerText = skills.length;
+    }
+
+    function toggleAllTools() {
+      const chks = document.querySelectorAll('.export-tool-chk');
+      const allChecked = Array.from(chks).every(c => c.checked);
+      chks.forEach(c => c.checked = !allChecked);
+      updateSelectedCounts();
+    }
+
+    function toggleAllSkills() {
+      const chks = document.querySelectorAll('.export-skill-chk');
+      const allChecked = Array.from(chks).every(c => c.checked);
+      chks.forEach(c => c.checked = !allChecked);
+      updateSelectedCounts();
+    }
+
+    async function executeExportDownload() {
+      const tools = Array.from(document.querySelectorAll('.export-tool-chk:checked')).map(c => c.value);
+      const skills = Array.from(document.querySelectorAll('.export-skill-chk:checked')).map(c => c.value);
+
+      const payload = {
+        profile_name: 'workstation-profile',
+        selected_tools: tools,
+        selected_skills: skills
+      };
+
+      const url = exportFormat === 'zip' ? '/api/profile/export-zip' : '/api/profile/export-selective';
+      showToast(`Generating ${exportFormat.toUpperCase()} download...`);
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const blob = await res.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = exportFormat === 'zip' ? 'packetinstall-bundle.zip' : 'packetinstall.yaml';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      closeExportModal();
+      showToast('Download complete!');
+    }
+
+    // ================= PROJECTS SCANNER =================
+    async function triggerProjectScan() {
+      const scanBtn = document.getElementById('btnScanProjects');
+      if (scanBtn) scanBtn.classList.add('opacity-50', 'pointer-events-none');
+      
+      const scanPath = document.getElementById('projectScanPathInput').value || 'D:/IdeaSideProject';
+      document.getElementById('projectScanStats').innerText = 'Scanning drive projects...';
+
+      try {
+        const res = await fetch('/api/projects/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: scanPath, depth: 3 })
+        });
+        const data = await res.json();
+        projectsData = data.projects || [];
+
+        document.getElementById('projectCountLabel').innerText = projectsData.length;
+        document.getElementById('statTotalProjects').innerText = projectsData.length;
+        document.getElementById('projectScanStats').innerText = `Audited ${projectsData.length} projects (${data.total_deps} deps) in ${data.duration_ms}ms`;
+
+        renderProjectsGrid();
+      } catch (e) {
+        console.error('Project scan error:', e);
+        document.getElementById('projectScanStats').innerText = 'Scan error: ' + e;
+      } finally {
+        if (scanBtn) scanBtn.classList.remove('opacity-50', 'pointer-events-none');
+        lucide.createIcons();
+      }
+    }
+
+    function setScanPath(path) {
+      document.getElementById('projectScanPathInput').value = path;
+      triggerProjectScan();
+    }
+
+    function renderProjectsGrid() {
+      const grid = document.getElementById('projectsGrid');
+      if (!projectsData.length) {
+        grid.innerHTML = '<div class="col-span-3 p-8 text-center text-slate-500">No code projects discovered in this directory.</div>';
+        return;
+      }
+
+      grid.innerHTML = projectsData.map(p => {
+        let scoreColor = 'text-emerald-400';
+        let scoreBg = 'bg-emerald-500/10 border-emerald-500/20';
+        let grade = 'A+';
+        if (p.health_score < 80) { scoreColor = 'text-amber-400'; scoreBg = 'bg-amber-500/10 border-amber-500/20'; grade = 'B'; }
+        if (p.health_score < 60) { scoreColor = 'text-rose-400'; scoreBg = 'bg-rose-500/10 border-rose-500/20'; grade = 'D'; }
+
+        return `
+          <div onclick="openProjectDrawer('${p.name}')" class="glass-card p-4 rounded-xl space-y-3 cursor-pointer hover:border-amber-500/30 transition border border-white/5 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2 truncate">
+                  <i data-lucide="folder-git-2" class="w-4 h-4 text-amber-400 shrink-0"></i>
+                  <span class="font-bold text-xs text-white truncate">${p.name}</span>
+                </div>
+                <span class="px-2 py-0.5 rounded font-mono text-[10px] font-bold border ${scoreBg} ${scoreColor}">
+                  Score: ${p.health_score}% (${grade})
+                </span>
+              </div>
+              <div class="flex items-center space-x-2 text-[10px] font-mono">
+                <span class="px-1.5 py-0.2 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">${p.language}</span>
+                <span class="px-1.5 py-0.2 rounded bg-white/5 text-slate-400">${p.framework}</span>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+              <span>Deps: ${p.dependencies ? p.dependencies.length : 0}</span>
+              ${p.issue_count > 0 
+                ? `<span class="text-amber-400 font-semibold">⚠️ ${p.issue_count} issue(s)</span>`
+                : `<span class="text-emerald-400">✓ Healthy</span>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function openProjectDrawer(projName) {
+      const p = projectsData.find(x => x.name === projName);
+      if (!p) return;
+
+      document.getElementById('projDrawerTitle').innerText = p.name;
+      document.getElementById('projDrawerLangBadge').innerText = `${p.language} · ${p.framework}`;
+      document.getElementById('projHealthScore').innerText = `${p.health_score} / 100`;
+
+      const badge = document.getElementById('projIssueCountBadge');
+      if (p.issue_count > 0) {
+        badge.className = 'px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30';
+        badge.innerText = `${p.issue_count} Issues Detected`;
+      } else {
+        badge.className = 'px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+        badge.innerText = 'All Clean';
+      }
+
+      document.getElementById('projDepsCountLabel').innerText = (p.dependencies || []).length;
+      document.getElementById('projUpdateCmd').innerText = p.language === 'Go' ? 'go get -u ./...' : 'npm audit fix && npm update';
+
+      const tbody = document.getElementById('projDepsTableBody');
+      if (!p.dependencies || !p.dependencies.length) {
+        tbody.innerHTML = '<tr><td colspan="3" class="p-3 text-center text-slate-500">No dependencies declared.</td></tr>';
+      } else {
+        tbody.innerHTML = p.dependencies.map(d => {
+          let statusBadge = `<span class="text-emerald-400 font-semibold">OK</span>`;
+          let fixBtn = '';
+
+          if (d.status === 'RISKY') {
+            statusBadge = `<span class="text-amber-400 font-bold" title="${d.issue}">Risky</span>`;
+            fixBtn = `
+              <button onclick="fixSpecificDependency('${p.name}', '${d.name}', ${d.is_dev})" title="Fix & pin '${d.name}' to latest stable semver" class="px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-[10px] font-mono transition flex items-center space-x-1 shrink-0">
+                <i data-lucide="zap" class="w-2.5 h-2.5"></i>
+                <span>Fix Gói Này</span>
+              </button>`;
+          } else if (d.status === 'DEPRECATED') {
+            statusBadge = `<span class="text-rose-400 font-bold" title="${d.issue}">Deprecated</span>`;
+            fixBtn = `
+              <button onclick="fixSpecificDependency('${p.name}', '${d.name}', ${d.is_dev})" title="Update or replace '${d.name}'" class="px-2 py-0.5 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-[10px] font-mono transition flex items-center space-x-1 shrink-0">
+                <i data-lucide="zap" class="w-2.5 h-2.5"></i>
+                <span>Fix Gói Này</span>
+              </button>`;
+          } else if (d.status === 'OUTDATED') {
+            statusBadge = `<span class="text-cyan-400 font-bold">Outdated</span>`;
+            fixBtn = `
+              <button onclick="fixSpecificDependency('${p.name}', '${d.name}', ${d.is_dev})" title="Update '${d.name}' to latest version" class="px-2 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-[10px] font-mono transition flex items-center space-x-1 shrink-0">
+                <i data-lucide="arrow-up" class="w-2.5 h-2.5"></i>
+                <span>Update Gói</span>
+              </button>`;
+          }
+
+          return `
+            <tr class="hover:bg-white/[0.02]">
+              <td class="p-2.5 text-slate-200">${d.name} ${d.is_dev ? '<span class="text-[9px] text-slate-500">(dev)</span>' : ''}</td>
+              <td class="p-2.5 text-slate-400 font-mono">${d.version}</td>
+              <td class="p-2.5 text-right">
+                <div class="flex items-center justify-end space-x-2">
+                  ${statusBadge}
+                  ${fixBtn}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      const drawer = document.getElementById('projectDrawer');
+      drawer.classList.remove('drawer-closed');
+      drawer.classList.add('drawer-open');
+      showBackdrop();
+      lucide.createIcons();
+    }
+
+    function closeProjectDrawer() {
+      const drawer = document.getElementById('projectDrawer');
+      drawer.classList.remove('drawer-open');
+      drawer.classList.add('drawer-closed');
+      hideBackdrop();
+    }
+
+    async function fixSpecificDependency(projName, depName, isDev) {
+      const p = projectsData.find(x => x.name === projName);
+      if (!p) return;
+      showToast(`Đang fix riêng gói ${depName}...`);
+      try {
+        const res = await fetch('/api/project/fix-dep', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            project_path: p.path,
+            language: p.language,
+            package_name: depName,
+            is_dev: isDev
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`✓ Đã fix xong gói ${depName}!`);
+          await triggerProjectScan();
+          openProjectDrawer(projName);
+        } else {
+          showToast(`Lỗi khi fix: ${data.error || data.output}`);
+        }
+      } catch (err) {
+        showToast('Lỗi mạng: ' + err);
+      }
+    }
+
+    function copyProjCommand() {
+      const cmd = document.getElementById('projUpdateCmd').innerText;
+      navigator.clipboard.writeText(cmd);
+      showToast('Copied: ' + cmd);
+    }
+
+    // ================= INSTALL PACKAGE MODAL =================
+    function openInstallModal() {
+      document.getElementById('installModal').classList.remove('hidden');
+      document.getElementById('installPkgInput').focus();
+    }
+
+    function closeInstallModal() {
+      document.getElementById('installModal').classList.add('hidden');
+      document.getElementById('installConsoleOutput').classList.add('hidden');
+    }
+
+    function selectInstallerMgr(mgr) {
+      selectedManagerForInstall = mgr;
+      ['npm', 'choco', 'scoop'].forEach(m => {
+        const btn = document.getElementById('btnMgr-' + m);
+        if (m === mgr) {
+          btn.className = 'py-2 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold';
+        } else {
+          btn.className = 'py-2 rounded-lg bg-white/5 text-slate-400 border border-white/5 font-semibold hover:text-white';
+        }
+      });
+    }
+
+    async function executePackageInstall() {
+      const pkgName = document.getElementById('installPkgInput').value.trim();
+      if (!pkgName) {
+        showToast('Please enter a package name');
+        return;
+      }
+
+      const btn = document.getElementById('btnExecuteInstall');
+      btn.innerText = 'Installing...';
+      btn.classList.add('opacity-50', 'pointer-events-none');
+
+      const consoleBox = document.getElementById('installConsoleOutput');
+      consoleBox.classList.remove('hidden');
+      consoleBox.innerText = `Executing: ${selectedManagerForInstall} install ${pkgName}...\n`;
+
+      try {
+        const res = await fetch('/api/packages/install', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            manager: selectedManagerForInstall,
+            package: pkgName,
+            global: true
+          })
+        });
+        const data = await res.json();
+        consoleBox.innerText += data.output || (data.success ? 'Success!\n' : data.error);
+
+        if (data.success) {
+          showToast(`Successfully installed ${pkgName}!`);
+          refreshData();
+        } else {
+          showToast(`Install error: ${data.error || 'Failed'}`);
+        }
+      } catch (err) {
+        consoleBox.innerText += '\nNetwork error: ' + err;
+      } finally {
+        btn.innerText = 'Run Installation';
+        btn.classList.remove('opacity-50', 'pointer-events-none');
+      }
+    }
+
+    // ================= DASHBOARD & UTILS =================
+    function renderDashboardAgents() {
+      const container = document.getElementById('agentCardsGrid');
+      const agents = [
+        { name: 'Claude Code', pkg: '@anthropic-ai/claude-code', desc: 'Anthropic Autonomous Terminal Agent', color: 'from-amber-500 to-orange-600' },
+        { name: 'OpenCode / OMP', pkg: 'opencode-ai', desc: 'Autonomous Open Source Harness', color: 'from-cyan-500 to-blue-600' },
+        { name: 'Codex / Gemini', pkg: '@google/gemini-cli', desc: 'Multi-model Developer CLI', color: 'from-purple-500 to-pink-600' },
+      ];
+
+      container.innerHTML = agents.map(a => {
+        const found = (appState.packages || []).find(p => p.name === a.pkg);
+        return `
+          <div class="glass-card p-4 rounded-xl flex items-center justify-between border border-white/5">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-tr ${a.color} flex items-center justify-center font-bold text-cyber-950 shadow-md text-sm">
+                ${a.name.slice(0, 2).toUpperCase()}
+              </div>
+              <div>
+                <div class="font-bold text-xs text-white">${a.name}</div>
+                <div class="text-[11px] text-slate-400">${a.desc}</div>
+              </div>
+            </div>
+            <div>
+              ${found 
+                ? `<span class="px-2 py-0.5 text-[10px] font-mono rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/20 font-semibold">v${found.version}</span>`
+                : `<span class="px-2 py-0.5 text-[10px] font-mono rounded-full bg-white/5 text-slate-500 border border-white/5">Not Installed</span>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderMcpCards(searchQuery = '') {
+      const container = document.getElementById('mcpCardsContainer');
+      let mcps = appState.mcp_servers || [];
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        mcps = mcps.filter(m => m.name.toLowerCase().includes(q) || m.command.toLowerCase().includes(q));
+      }
+
+      if (!mcps.length) {
+        container.innerHTML = `<div class="col-span-2 p-8 text-center text-slate-500">No MCP servers configured yet in Claude Desktop or Cursor.</div>`;
+        return;
+      }
+
+      container.innerHTML = mcps.map(m => `
+        <div class="glass-card p-5 rounded-2xl space-y-3.5 border border-white/5 hover:border-violet-500/30 transition">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <div class="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                <i data-lucide="cable" class="w-3.5 h-3.5"></i>
+              </div>
+              <h4 class="font-bold text-sm text-white">${m.name}</h4>
+            </div>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-300 border border-violet-500/20">${m.source}</span>
+          </div>
+
+          <div class="bg-cyber-950/80 p-3 rounded-xl border border-white/5 space-y-1.5">
+            <div class="text-[10px] uppercase font-semibold text-slate-500">Execution Command</div>
+            <div class="font-mono text-xs text-slate-200 break-all">${m.command} ${(m.args || []).join(' ')}</div>
+          </div>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    async function loadProfileYamlPreview() {
+      try {
+        const res = await fetch('/api/profile/export');
+        const yamlText = await res.text();
+        document.getElementById('currentProfileYamlText').value = yamlText;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function switchTab(tabId) {
+      ['dashboard', 'projects', 'tools', 'skills', 'mcp', 'sync'].forEach(t => {
+        const view = document.getElementById('view-' + t);
+        const nav = document.getElementById('nav-' + t);
+        if (view) view.classList.toggle('hidden', t !== tabId);
+        if (nav) nav.classList.toggle('nav-item-active', t === tabId);
+      });
+      lucide.createIcons();
+    }
+
+    function filterTools(manager) {
+      ['all', 'choco', 'npm'].forEach(m => {
+        const btn = document.getElementById('toolFilter-' + m);
+        if (m === manager) {
+          btn.className = 'px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-400 font-semibold';
+        } else {
+          btn.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white';
+        }
+      });
+      renderToolsTable(manager, document.getElementById('globalSearch').value);
+    }
+
+    function handleGlobalSearch(query) {
+      renderToolsTable('all', query);
+      renderSkillsCards(query);
+      renderMcpCards(query);
+    }
+
+    function copyProfileYaml() {
+      const text = document.getElementById('currentProfileYamlText').value;
+      navigator.clipboard.writeText(text);
+      showToast('YAML profile copied to clipboard!');
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text);
+      showToast('Copied: ' + text);
+    }
+
+    function refreshData() {
+      showToast('Refreshing system scan...');
+      loadInitialData();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2500);
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('globalSearch').focus();
+      }
+      if (e.key === 'Escape') {
+        closeSkillDocsDrawer();
+        closeProjectDrawer();
+        closeInstallModal();
+        closeVersionModal();
+        closeExportModal();
+        document.getElementById('globalSearch').blur();
+      }
+    });
+
+    loadInitialData();
+  </script>
+</body>
+</html>
