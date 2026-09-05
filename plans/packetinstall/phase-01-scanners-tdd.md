@@ -41,7 +41,7 @@ ScanCoordinator.ScanAll()
    - Setup mock `node_modules` with standard and scoped (`@anthropic-ai/claude-code`) packages.
    - Verify parsed packages and versions.
 4. `TestSkillsScanner`:
-   - Setup mock `skills/fable-thinking/SKILL.md`.
+   - Setup mock `skills/sequential-thinking/SKILL.md`.
    - Verify skill name, description, and git remote resolution.
 5. `TestMcpScanner`:
    - Setup mock `claude_desktop_config.json`.

@@ -103,16 +103,16 @@ func TestScanNpm(t *testing.T) {
 
 func TestScanSkills(t *testing.T) {
 	tmpDir := t.TempDir()
-	skillDir := filepath.Join(tmpDir, "fable-thinking")
+	skillDir := filepath.Join(tmpDir, "sequential-thinking")
 	if err := os.MkdirAll(skillDir, 0755); err != nil {
 		t.Fatal(err)
 	}
 
 	skillContent := `---
-name: fable-thinking
-description: Disciplined reasoning protocol for code reviews and architecture.
+name: sequential-thinking
+description: Step-by-step analysis for complex problems with revision capability.
 ---
-# Fable Thinking
+# Sequential Thinking
 `
 	if err := os.WriteFile(filepath.Join(skillDir, "SKILL.md"), []byte(skillContent), 0644); err != nil {
 		t.Fatal(err)
@@ -125,10 +125,10 @@ description: Disciplined reasoning protocol for code reviews and architecture.
 	if len(skills) != 1 {
 		t.Fatalf("expected 1 skill, got %d", len(skills))
 	}
-	if skills[0].Name != "fable-thinking" {
-		t.Errorf("expected skill name 'fable-thinking', got '%s'", skills[0].Name)
+	if skills[0].Name != "sequential-thinking" {
+		t.Errorf("expected skill name 'sequential-thinking', got '%s'", skills[0].Name)
 	}
-	if skills[0].Description != "Disciplined reasoning protocol for code reviews and architecture." {
+	if skills[0].Description != "Step-by-step analysis for complex problems with revision capability." {
 		t.Errorf("unexpected description: '%s'", skills[0].Description)
 	}
 }

@@ -1,52 +1,37 @@
-# 🤝 Contributing to PackageHub
+# Contributing
 
-Thank you for your interest in contributing to **PackageHub**!
+## Setup
 
----
+**Prerequisites:** Go 1.22+, Git, Windows 10/11 (for WebView2 testing).
 
-## 1. Development Setup
-
-### Prerequisites
-- **Go 1.22+**
-- **Git**
-- **Windows 10/11** (for WebView2 testing)
-
-### Clone & Build
 ```bash
-git clone https://github.com/LinhDangDev/PackageHub.git
+git clone https://github.com/your-username/PackageHub.git
 cd PackageHub
-
-# Download dependencies
-go mod download
-
-# Build binary
-go build -o packetinstall.exe ./cmd/packetinstall
+go mod tidy
 ```
 
----
+## Build
 
-## 2. Test-Driven Development (TDD) Workflow
+```bash
+go build -ldflags="-H windowsgui" -o packetinstall.exe ./cmd/packetinstall
+```
 
-Every feature or bug fix must follow strict TDD:
-1. **Red**: Write unit tests in `*_test.go` asserting expected behaviors.
-2. **Green**: Implement the minimal production code in `internal/*`.
-3. **Refactor**: Clean up and optimize.
+## Test
 
-Run tests:
 ```bash
 go test -v ./...
 ```
 
----
+All tests must pass before submitting a PR. Tests cover scanning, profile export/import, secret masking, and bundle generation.
 
-## 3. Architecture Rules
-- **No Console Popups**: Never spawn unmanaged `exec.Command` on Windows without `CREATE_NO_WINDOW` (or `hideConsole`).
-- **Direct Filesystem First**: Always prefer reading manifests (`package.json`, `.nuspec`, `.git/config`, `go.mod`) on disk rather than spawning slow CLI processes.
-- **Secret Isolation**: Never serialize raw API credentials in exported profiles. Always mask with `${ENV_VAR}`.
+## Pull Requests
 
----
-
-## 4. Pull Request Process
 1. Fork the repo and create your branch from `main`.
-2. Ensure `go test -v ./...` passes 100%.
-3. Submit your PR with a clear description of changes.
+2. Make your changes and ensure `go test -v ./...` passes 100%.
+3. Submit a PR with a clear description of changes.
+
+## Code Style
+
+- Follow standard Go conventions (`gofmt`, `go vet`).
+- Keep functions focused and testable.
+- Add tests for new scanner or profile logic.

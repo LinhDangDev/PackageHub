@@ -279,7 +279,7 @@
             </div>
             <div class="flex items-baseline space-x-2">
               <div id="statTotalProjects" class="text-3xl font-extrabold text-amber-400 font-mono">13</div>
-              <span class="text-[11px] text-amber-400 font-medium">In D:\IdeaSideProject</span>
+              <span class="text-[11px] text-amber-400 font-medium">Scanned Projects</span>
             </div>
             <p class="text-[11px] text-slate-400">Full dependency audit</p>
           </div>
@@ -346,13 +346,12 @@
           <div class="flex flex-col sm:flex-row items-center gap-3 pt-2 border-t border-white/5">
             <div class="w-full relative">
               <i data-lucide="hard-drive" class="w-4 h-4 text-slate-500 absolute left-3.5 top-2.5"></i>
-              <input type="text" id="projectScanPathInput" value="D:\IdeaSideProject" class="w-full bg-cyber-950/80 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-amber-500 transition">
+              <input type="text" id="projectScanPathInput" value="" placeholder="Enter path to scan (e.g. D:\Projects)" class="w-full bg-cyber-950/80 border border-white/10 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-200 font-mono focus:outline-none focus:border-amber-500 transition">
             </div>
             <div class="flex items-center space-x-1.5 shrink-0 text-xs">
               <span class="text-slate-500 text-[11px]">Quick:</span>
-              <button onclick="setScanPath('D:\\IdeaSideProject')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 font-mono text-[11px]">D:\IdeaSideProject</button>
+              <button onclick="setScanPath('C:\\')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 font-mono text-[11px]">C:\</button>
               <button onclick="setScanPath('D:\\')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 font-mono text-[11px]">D:\</button>
-              <button onclick="setScanPath('C:\\Users\\Dev')" class="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 font-mono text-[11px]">C:\Users\Dev</button>
             </div>
           </div>
         </div>
@@ -1537,7 +1536,7 @@
       const scanBtn = document.getElementById('btnScanProjects');
       if (scanBtn) scanBtn.classList.add('opacity-50', 'pointer-events-none');
       
-      const scanPath = document.getElementById('projectScanPathInput').value || 'D:/IdeaSideProject';
+      const scanPath = document.getElementById('projectScanPathInput').value || '.';
       document.getElementById('projectScanStats').innerText = 'Scanning drive projects...';
 
       try {

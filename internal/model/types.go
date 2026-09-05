@@ -78,7 +78,7 @@ type SkillFlag struct {
 
 // Skill represents an AI Agent skill or workflow extension.
 type Skill struct {
-	Name         string      `json:"name"`          // e.g. ck:ask, fable-thinking
+	Name         string      `json:"name"`          // e.g. ck:ask, sequential-thinking
 	ToolOrigin   string      `json:"tool_origin"`   // "claudekit", "opencode", "codex", "universal", "local"
 	Category     string      `json:"category"`      // "utilities", "planning", "coding", "design", etc.
 	Tier         string      `json:"tier"`          // "beginner", "intermediate", "pro"

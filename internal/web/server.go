@@ -163,7 +163,7 @@ func (s *Server) handleProjectsScan(w http.ResponseWriter, r *http.Request) {
 		Depth int    `json:"depth"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Path == "" {
-		req.Path = "D:/IdeaSideProject"
+		req.Path = "."
 	}
 	if req.Depth <= 0 {
 		req.Depth = 3
@@ -224,7 +224,7 @@ func (s *Server) handleHistory(w http.ResponseWriter, r *http.Request) {
 		{Status: "Partial", Resource: "Browser Control", Action: "Update skill", Timestamp: "10 mins ago"},
 		{Status: "Recoverable", Resource: "Release Pilot", Action: "Update skill", Timestamp: "25 mins ago"},
 		{Status: "Cancelled", Resource: "Docker Desktop", Action: "Vendor handoff", Timestamp: "1 hour ago"},
-		{Status: "Success", Resource: "fable-thinking", Action: "Catalog import", Timestamp: "2 hours ago"},
+		{Status: "Success", Resource: "Sequential Thinking", Action: "Catalog import", Timestamp: "2 hours ago"},
 	}
 
 	w.Header().Set("Content-Type", "application/json")

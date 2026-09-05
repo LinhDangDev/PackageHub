@@ -14,7 +14,7 @@ func TestExportProfile_SecretMasking(t *testing.T) {
 			{Manager: "npm", Name: "@anthropic-ai/claude-code", Version: "2.1.261"},
 		},
 		Skills: []model.Skill{
-			{Name: "fable-thinking", GitRemote: "https://github.com/example/fable-thinking.git"},
+			{Name: "sequential-thinking", GitRemote: "https://github.com/example/sequential-thinking.git"},
 		},
 		McpServers: []model.McpServer{
 			{
@@ -58,7 +58,7 @@ func TestCalculateDiff(t *testing.T) {
 			{Manager: "choco", Name: "git", Version: "2.43.0"},
 		},
 		Skills: []model.Skill{
-			{Name: "fable-thinking"},
+			{Name: "sequential-thinking"},
 		},
 		McpServers: []model.McpServer{},
 	}
@@ -85,7 +85,7 @@ func TestCalculateDiff(t *testing.T) {
 			},
 		},
 		Skills: []model.SkillProfileSpec{
-			{Name: "fable-thinking"},
+			{Name: "sequential-thinking"},
 			{Name: "aesthetic", RepoURL: "https://github.com/example/aesthetic.git"},
 		},
 		McpServers: []model.McpServerProfileSpec{

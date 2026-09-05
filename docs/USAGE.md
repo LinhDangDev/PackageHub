@@ -1,70 +1,55 @@
-# 📖 PackageHub User Guide & Operations Manual
+# User Guide
 
-For an in-depth visual breakdown of every screen, button, and interaction, see the [Full UI Walkthrough](UI_WALKTHROUGH.md).
+## Launching
 
----
+### Desktop GUI
 
-## 1. Launching PackageHub
+Double-click `packetinstall.exe` or run:
 
-### 1.1. Native Desktop GUI (Default)
-Double-click `packetinstall.exe` in File Explorer or run in PowerShell:
 ```powershell
 .\packetinstall.exe
 ```
-*Opens the standalone desktop application window with Dark Mode titlebar and zero console popups.*
 
-### 1.2. Command Line (CLI) Subcommands
+No console window appears — the app opens as a native desktop window with dark mode.
+
+### CLI Mode
+
 ```powershell
-# Scan installed packages & skills in terminal
-.\packetinstall.exe scan
-
-# Audit for End-of-Life runtimes & upstream updates
-.\packetinstall.exe audit
-
-# Export workstation configuration
-.\packetinstall.exe export -o workstation.yaml
-
-# Compare and dry-run apply a profile from another machine
-.\packetinstall.exe apply workstation.yaml --dry-run
+.\packetinstall.exe scan             # Scan installed tools & agent skills
+.\packetinstall.exe audit            # Check for EOL runtimes & upstream updates
+.\packetinstall.exe export -o dev.yaml   # Export workstation profile to YAML
+.\packetinstall.exe apply dev.yaml --dry-run  # Dry-run import from another machine
 ```
 
 ---
 
-## 2. Navigating the Interface
+## Interface Guide
 
-### 2.1. Dashboard View
-- **Hero Status Banner**: Environment health assessment (e.g. `98/100 Optimal`).
-- **Metric Cards**: Real-time counts of installed packages, discovered projects, agent skills, and active MCP servers.
-- **Autonomous AI Coding Agents Widget**: Version status and health pings for Claude Code, OpenCode / OMP, and Codex / Gemini CLI.
+### Dashboard
+High-level overview: environment health score, counts of packages/projects/skills/MCP servers, and AI coding agent status.
 
-### 2.2. Project & Drive Dependency Auditor (Tab: `Project Auditor`)
-1. Enter or select any directory/drive (e.g. `D:\IdeaSideProject`, `D:\`, `C:\Users\Dev`).
-2. Click **"Scan Projects Now"**.
-3. View discovered projects with health grades (`A+ 100%`, `B`, `D`), language tags, and issue counts.
-4. Click any project card to open the **Project Dependency Inspector Drawer**:
-   - Inspect every declared package and version.
-   - For risky wildcard versions (`latest`, `*`) or deprecated packages, click the dedicated **"⚡ Fix Dependency"** button to resolve and pin that specific package without affecting other dependencies.
-   - Click outside the drawer or press `ESC` to close.
+### Project Auditor
+1. Enter a directory path in the scan input field (or use the quick-select drive buttons).
+2. Click **Scan Projects Now**.
+3. View discovered projects with health grades (A+ through D), language tags, and dependency counts.
+4. Click a project card to inspect its dependencies. Use **Fix Dependency** to resolve a specific problematic package without touching others.
 
-### 2.3. Dev Tools & Package Management (Tab: `Dev Tools & Manage`)
-- **Upgrade / Downgrade Version Switcher**: Click the **Version ⇅** button on any package to upgrade to `latest`, `LTS`, or enter any specific version number.
-- **Uninstalling Tools**: Click the trash icon 🗑️ to remove a tool cleanly from NPM, Chocolatey, or Scoop.
-- **Installing New Tools**: Click **"+ Install Tool"** in the top navigation bar to search and install tools with live console output.
+### Dev Tools
+Lists all installed packages (Chocolatey, Scoop, NPM Global) with:
+- **Fix** — Auto-updates outdated packages or injects missing PATH entries.
+- **Version ⇅** — Upgrade to latest/LTS or downgrade to a specific version.
+- **Remove** — Clean uninstall via the appropriate package manager.
 
-### 2.4. AI Agent Skills Hub & Command Inspector (Tab: `Agent Skills`)
-- **Ecosystem Origin Filters**: Switch between `Claude Agent`, `OpenCode / OMP`, `Codex`, and `Community / Universal`.
-- **Skill Tiers**:
-  - 🟢 **Beginner**: Quick questions, brainstorming, single bug fixes, documentation.
-  - 🟡 **Intermediate**: Structured planning, test-driven cooking, PR reviews, git flows.
-  - 🔴 **Pro**: End-to-end bootstrapping, deep codebase scouting, automated release shipping, multi-agent teams.
-- **Interactive Documentation Drawer**:
-  - Click any skill to view its command syntax, arguments, interactive 1-click copy examples, pro tips, and full Markdown documentation.
-  - **Flag Explanations & 1-Click Append**: Inspect every supported flag (`--fast`, `--mode`, `--provider`, `--tdd`, `--skip`) with detailed descriptions. Click `+ Add Flag` to append the flag directly to your prompt.
-  - Click outside the drawer or press `ESC` to dismiss.
+Use the **+ Install Tool** button in the top bar to install new tools without opening a terminal.
 
-### 2.5. Machine Sync & Offline ZIP Bundler (Tab: `Machine Sync & Diff`)
-- **1-Click Auto-Install All**: Paste another machine's `packetinstall.yaml` to calculate differences. Click **"🚀 Execute Auto-Install All"** to execute unattended background installations with live progress tracking.
-- **Export Options**:
-  - Click **"Export Options"** in the top navigation bar.
-  - Choose between **Declarative YAML** (lightweight text manifest) or **Portable Offline ZIP Bundle** (packages manifest + offline skill files + `install.ps1` script).
-  - Use checkboxes to select only specific packages or skills to include.
+### Agent Skills
+Browses all AI agent skills discovered on your machine:
+- Filter by origin (Claude, OpenCode, Codex, Community) and complexity tier (Beginner, Intermediate, Pro).
+- Click any skill to view its documentation, command syntax, and supported flags.
+
+### MCP Servers
+Displays Model Context Protocol servers configured in your editor settings.
+
+### Machine Sync & Export
+- **Export**: Generate a declarative YAML manifest or a portable offline ZIP bundle with selective checkboxes. Secrets are automatically masked.
+- **Import**: Paste another machine's YAML to diff and auto-install missing tools.

@@ -236,9 +236,9 @@ ai_ecosystem:
         GITHUB_PERSONAL_ACCESS_TOKEN: "${GITHUB_TOKEN}" # Secret reference, not plain text
   
   skills:
-    - name: "fable-thinking"
-      repo_url: "https://github.com/example/fable-thinking.git"
-      target_dir: "~/.agent/skills/fable-thinking"
+    - name: "sequential-thinking"
+      repo_url: "https://github.com/example/sequential-thinking.git"
+      target_dir: "~/.agent/skills/sequential-thinking"
       commit_sha: "e9a1b2c3..."
     - name: "aesthetic"
       repo_url: "https://github.com/example/agent-skills.git"

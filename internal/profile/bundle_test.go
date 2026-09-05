@@ -17,7 +17,7 @@ func TestSelectiveExportAndZipBundle(t *testing.T) {
 			{Manager: "npm", Name: "pnpm", Version: "9.1.0"},
 		},
 		Skills: []model.Skill{
-			{Name: "fable-thinking"},
+			{Name: "sequential-thinking"},
 			{Name: "aesthetic"},
 		},
 		McpServers: []model.McpServer{
@@ -28,7 +28,7 @@ func TestSelectiveExportAndZipBundle(t *testing.T) {
 	req := SelectiveExportRequest{
 		ProfileName:    "my-selective-bundle",
 		SelectedTools:  []string{"ripgrep", "pnpm"},
-		SelectedSkills: []string{"fable-thinking"},
+		SelectedSkills: []string{"sequential-thinking"},
 	}
 
 	// 1. Test FilterState
@@ -36,8 +36,8 @@ func TestSelectiveExportAndZipBundle(t *testing.T) {
 	if len(filtered.Packages) != 2 {
 		t.Errorf("expected 2 filtered packages, got %d", len(filtered.Packages))
 	}
-	if len(filtered.Skills) != 1 || filtered.Skills[0].Name != "fable-thinking" {
-		t.Errorf("expected 1 filtered skill fable-thinking, got %v", filtered.Skills)
+	if len(filtered.Skills) != 1 || filtered.Skills[0].Name != "sequential-thinking" {
+		t.Errorf("expected 1 filtered skill sequential-thinking, got %v", filtered.Skills)
 	}
 
 	// 2. Test ZIP bundle generation
