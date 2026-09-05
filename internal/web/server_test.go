@@ -95,4 +95,51 @@ system_packages:
 	if diag.Status == "" {
 		t.Errorf("expected non-empty diagnostic status")
 	}
+
+	// 5. Test GET /api/cleaner/leftovers
+	respLeftovers, err := http.Get(ts.URL + "/api/cleaner/leftovers?tool=ripgrep")
+	if err != nil {
+		t.Fatalf("GET /api/cleaner/leftovers failed: %v", err)
+	}
+	defer respLeftovers.Body.Close()
+	if respLeftovers.StatusCode != http.StatusOK {
+		t.Errorf("expected 200 OK for leftovers, got %d", respLeftovers.StatusCode)
+	}
+	var leftoverRep model.LeftoverReport
+	if err := json.NewDecoder(respLeftovers.Body).Decode(&leftoverRep); err != nil {
+		t.Fatalf("failed to decode leftovers: %v", err)
+	}
+	if leftoverRep.ToolName != "ripgrep" {
+		t.Errorf("expected tool_name 'ripgrep', got '%s'", leftoverRep.ToolName)
+	}
+
+	// 6. Test GET /api/cleaner/path
+	respPath, err := http.Get(ts.URL + "/api/cleaner/path")
+	if err != nil {
+		t.Fatalf("GET /api/cleaner/path failed: %v", err)
+	}
+	defer respPath.Body.Close()
+	if respPath.StatusCode != http.StatusOK {
+		t.Errorf("expected 200 OK for path audit, got %d", respPath.StatusCode)
+	}
+
+	// 7. Test GET /api/cleaner/caches
+	respCaches, err := http.Get(ts.URL + "/api/cleaner/caches")
+	if err != nil {
+		t.Fatalf("GET /api/cleaner/caches failed: %v", err)
+	}
+	defer respCaches.Body.Close()
+	if respCaches.StatusCode != http.StatusOK {
+		t.Errorf("expected 200 OK for caches, got %d", respCaches.StatusCode)
+	}
+
+	// 8. Test GET /api/cleaner/ports
+	respPorts, err := http.Get(ts.URL + "/api/cleaner/ports")
+	if err != nil {
+		t.Fatalf("GET /api/cleaner/ports failed: %v", err)
+	}
+	defer respPorts.Body.Close()
+	if respPorts.StatusCode != http.StatusOK {
+		t.Errorf("expected 200 OK for ports, got %d", respPorts.StatusCode)
+	}
 }

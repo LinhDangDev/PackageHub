@@ -8,6 +8,7 @@ import (
 	"runtime"
 
 	"packetinstall/internal/auditor"
+	"packetinstall/internal/cleaner"
 	"packetinstall/internal/installer"
 	"packetinstall/internal/model"
 	"packetinstall/internal/profile"
@@ -55,6 +56,14 @@ func (s *Server) registerRoutes() {
 	s.mux.HandleFunc("POST /api/project/fix-dep", s.handleProjectFixDep)
 	s.mux.HandleFunc("GET /api/profile/export", s.handleProfileExport)
 	s.mux.HandleFunc("POST /api/profile/diff", s.handleProfileDiff)
+	s.mux.HandleFunc("GET /api/cleaner/leftovers", s.handleCleanerLeftovers)
+	s.mux.HandleFunc("POST /api/cleaner/purge-leftovers", s.handleCleanerPurgeLeftovers)
+	s.mux.HandleFunc("GET /api/cleaner/path", s.handleCleanerPath)
+	s.mux.HandleFunc("POST /api/cleaner/path-prune", s.handleCleanerPathPrune)
+	s.mux.HandleFunc("GET /api/cleaner/caches", s.handleCleanerCaches)
+	s.mux.HandleFunc("POST /api/cleaner/cache-clean", s.handleCleanerCacheClean)
+	s.mux.HandleFunc("GET /api/cleaner/ports", s.handleCleanerPorts)
+	s.mux.HandleFunc("POST /api/cleaner/kill-port", s.handleCleanerKillPort)
 	s.mux.HandleFunc("GET /", s.handleStatic)
 }
 
@@ -356,4 +365,90 @@ func (s *Server) handleStatic(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	_, _ = w.Write(data)
+}
+
+func (s *Server) handleCleanerLeftovers(w http.ResponseWriter, r *http.Request) {
+	toolName := r.URL.Query().Get("tool")
+	report := cleaner.ScanLeftovers(toolName)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(report)
+}
+
+func (s *Server) handleCleanerPurgeLeftovers(w http.ResponseWriter, r *http.Request) {
+	var req model.PurgeLeftoversRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "invalid request body", http.StatusBadRequest)
+		return
+	}
+	res := cleaner.PurgeLeftovers(req)
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(res)
+}
+
+func (s *Server) handleCleanerPath(w http.ResponseWriter, r *http.Request) {
+	report := cleaner.AuditPath()
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(report)
+}
+
+func (s *Server) handleCleanerPathPrune(w http.ResponseWriter, r *http.Request) {
+	report, err := cleaner.PruneDeadPaths()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(report)
+}
+
+func (s *Server) handleCleanerCaches(w http.ResponseWriter, r *http.Request) {
+	report := cleaner.AuditDevCaches()
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(report)
+}
+
+func (s *Server) handleCleanerCacheClean(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		CacheID string `json:"cache_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.CacheID == "" {
+		http.Error(w, "cache_id is required", http.StatusBadRequest)
+		return
+	}
+	freed, err := cleaner.CleanDevCache(req.CacheID)
+	resp := map[string]interface{}{
+		"success": err == nil,
+		"freed":   freed,
+	}
+	if err != nil {
+		resp["error"] = err.Error()
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(resp)
+}
+
+func (s *Server) handleCleanerPorts(w http.ResponseWriter, r *http.Request) {
+	report := cleaner.AuditDevPorts()
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(report)
+}
+
+func (s *Server) handleCleanerKillPort(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		PID int `json:"pid"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.PID <= 0 {
+		http.Error(w, "valid pid is required", http.StatusBadRequest)
+		return
+	}
+	err := cleaner.KillProcess(req.PID)
+	resp := map[string]interface{}{
+		"success": err == nil,
+		"pid":     req.PID,
+	}
+	if err != nil {
+		resp["error"] = err.Error()
+	}
+	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(resp)
 }

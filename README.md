@@ -1,6 +1,6 @@
 # PackageHub
 
-> Open-source developer environment manager, AI agent skills browser, project auditor & offline workstation bundler.
+> Open-source developer environment manager, AI agent skills browser, project auditor, deep leftover cleaner & offline workstation bundler.
 
 Built with Go and native Windows WebView2. Zero terminal popups, dark mode, scan in under 100ms.
 
@@ -13,9 +13,14 @@ Built with Go and native Windows WebView2. Zero terminal popups, dark mode, scan
 ## Features
 
 - **Dashboard** — Overview of installed packages, project health, AI agent status.
+- **Geek-Style Deep Uninstall** — Remove packages and permanently scavenge residual files (`%APPDATA%`, `%LOCALAPPDATA%`, dotfolders), registry keys (`HKCU\Software`), and dead PATH entries.
+- **System Care & Optimizer**:
+  - **Zombie PATH Purger** — Detect and prune dead/missing folders from Windows User PATH.
+  - **Dev Cache & Storage Hog Cleaner** — One-click reclaim gigabytes from NPM, Pip, Go build/module, and Cargo caches.
+  - **Port & Process Conflict Auditor** — Audit active TCP listening dev ports (3000, 5173, 8080, etc.) with PID and process name; 1-click terminate conflicting processes.
 - **Project Auditor** — Scan drives/directories, detect languages & frameworks, audit dependency health (deprecations, wildcards), 1-click fix per dependency.
-- **Dev Tools** — Manage Chocolatey, Scoop, and NPM global packages. Upgrade, downgrade, or remove with one click.
-- **Agent Skills Browser** — Auto-discovers AI agent skills across installed agent harnesses. Categorizes by origin and complexity tier. View command docs and flags inline.
+- **Dev Tools** — Manage Chocolatey, Scoop, and NPM global packages. Upgrade, downgrade, fix, or deep-remove.
+- **Agent Skills Browser** — Auto-discovers AI agent skills across installed agent harnesses. Categorizes by origin and complexity tier.
 - **MCP Servers** — Catalogs Model Context Protocol servers configured in your editor.
 - **Machine Sync & Bundler** — Export your setup as YAML or a portable offline ZIP bundle. Import on a new machine with 1-click auto-install.
 
@@ -60,9 +65,10 @@ go build -ldflags="-H windowsgui" -o packetinstall.exe ./cmd/packetinstall
 | Tab | What it does |
 |-----|-------------|
 | **Dashboard** | System health score, package/project/skill counts, AI agent status |
+| **System Care** | Prune dead PATH folders, clean multi-GB dev caches (NPM, Pip, Go), and resolve port conflicts |
+| **Dev Tools** | Installed packages table with Version ⇅, Fix, Remove, and **Deep Uninstall** |
 | **Project Auditor** | Enter a path → scan projects → view dependency health grades (A+ to D) → fix individual deps |
-| **Dev Tools** | Table of installed packages with Version ⇅, Fix, and Remove buttons |
-| **Agent Skills** | Filter by origin (Claude, OpenCode, Codex, Community) and tier (Beginner/Intermediate/Pro). Click any skill to view docs. |
+| **Agent Skills** | Filter by origin (Claude, OpenCode, Codex, Community) and tier (Beginner/Intermediate/Pro) |
 | **MCP Servers** | View configured MCP server connections |
 | **Machine Sync** | Export/import workstation profiles. Secrets are auto-masked. |
 
@@ -78,6 +84,7 @@ PackageHub/
 ├── internal/
 │   ├── app/              # WebView2 window & DWM dark mode
 │   ├── model/            # Domain types
+│   ├── cleaner/          # Leftovers scavenger, zombie PATH purger, dev cache & port auditor
 │   ├── scanner/          # Choco, Scoop, NPM, Skills, MCP, Project scanners
 │   ├── installer/        # Install, uninstall, version switch, auto-fix
 │   ├── auditor/          # EOL & upstream update checker

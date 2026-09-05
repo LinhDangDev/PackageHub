@@ -16,7 +16,14 @@ A visual guide to every screen and interaction in PackageHub.
 
 ## Sidebar
 
-Fixed navigation with tabs: Dashboard, Project Auditor, Dev Tools, Agent Skills, MCP Servers, Machine Sync.
+Fixed navigation with tabs:
+- ⚡ **Dashboard**
+- 🛡️ **System Care** (with dynamic badge showing dead PATH count or CLEAN status)
+- 📁 **Project Auditor**
+- 📦 **Dev Tools & Manage**
+- 🧠 **Agent Skills**
+- 🔌 **MCP Servers**
+- 🔄 **Machine Sync & Diff**
 
 A pinned **Host Machine** card at the bottom shows OS info and online status.
 
@@ -27,6 +34,49 @@ A pinned **Host Machine** card at the bottom shows OS info and online status.
 - **Health Score Banner** — Aggregate environment health (e.g. 98/100).
 - **Metric Cards** — Clickable cards showing counts for packages, projects, skills, and MCP servers. Clicking navigates to the corresponding tab.
 - **AI Agent Status** — Version badges and health pings for detected coding agents.
+
+---
+
+## System Care & Developer Optimizer (New!)
+
+Provides three high-impact developer maintenance modules:
+
+### 1. Zombie PATH Purger
+- Scans all PATH entries and checks folder existence via `os.Stat`.
+- Dead or inaccessible paths are highlighted with red warning badges (`⚠️ Dead Folder`).
+- **Prune Dead Paths**: 1-click removes all dead entries from the Windows User Registry (`HKCU\Environment\Path`).
+
+### 2. Dev Storage & Cache Hog Cleaner
+- Audits reclaimable disk space across:
+  - NPM Cache (`%APPDATA%\npm-cache`)
+  - Python Pip Cache (`%LOCALAPPDATA%\pip\cache`)
+  - Go Build Cache (`%LOCALAPPDATA%\go-build`)
+  - Go Module Cache (`%USERPROFILE%\go\pkg\mod\cache`)
+  - Rust Cargo Cache (`%USERPROFILE%\.cargo\registry\cache`)
+  - Yarn & pnpm Caches
+  - Chocolatey Cache
+- Individual **Clean** buttons per cache or **Free Up All Caches** to reclaim gigabytes at once.
+
+### 3. Port & Process Conflict Auditor
+- Queries active TCP listening ports in the background.
+- Associates listening ports with their process names and PIDs (e.g. `:3000 node.exe PID 1420`).
+- **Kill**: Force-terminates the conflicting process to free up the port instantly.
+
+---
+
+## Dev Tools & Geek-Style Deep Uninstall
+
+An interactive table of all installed packages with columns: Tool, Manager, Version, Path, Actions.
+
+**Actions per tool:**
+- **Fix** — 1-click update or PATH injection.
+- **Version ⇅** — Opens a version switcher (latest, LTS, or custom).
+- **Remove 🗑️** — Standard package uninstall.
+- **Deep 💥 (New!)** — Opens the **Geek-Style Deep Uninstall Modal**:
+  1. Runs package uninstallation.
+  2. Deep-scans residual files, roaming data (`%APPDATA%`, `%LOCALAPPDATA%`), user dotfolders, registry keys (`HKCU\Software`), and dangling PATHs.
+  3. Displays an interactive checklist with sizes.
+  4. User reviews and clicks **Purge Selected Leftovers Permanently**.
 
 ---
 
@@ -44,30 +94,12 @@ A pinned **Host Machine** card at the bottom shows OS info and online status.
 
 ---
 
-## Dev Tools
-
-An interactive table of all installed packages with columns: Tool, Manager, Version, Path, Actions.
-
-**Actions per tool:**
-- **Fix** — 1-click update or PATH injection.
-- **Version ⇅** — Opens a version switcher (latest, LTS, or custom).
-- **Remove** — Clean uninstall.
-
----
-
 ## Agent Skills
 
 Displays all discovered AI agent skills with:
-
 - **Origin filters** — Claude, OpenCode, Codex, Community.
 - **Tier filters** — Beginner, Intermediate, Pro.
 - **Skill Cards** — Name, origin, tier, and short description. Click to open the documentation drawer.
-
-**Documentation Drawer:**
-- Command syntax and argument hints.
-- Supported flags with descriptions.
-- Example prompts with 1-click copy.
-- Full raw SKILL.md content.
 
 ---
 

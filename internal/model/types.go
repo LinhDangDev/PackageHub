@@ -173,3 +173,80 @@ type SkillProfileSpec struct {
 	RepoURL   string `yaml:"repo_url,omitempty" json:"repo_url,omitempty"`
 	CommitSHA string `yaml:"commit_sha,omitempty" json:"commit_sha,omitempty"`
 }
+
+// LeftoverItem represents a residual file, directory, registry key or PATH entry left by a tool.
+type LeftoverItem struct {
+	ID          string `json:"id"`
+	Type        string `json:"type"` // "dir", "file", "registry", "path"
+	Path        string `json:"path"`
+	Description string `json:"description"`
+	Size        int64  `json:"size"`
+	Selected    bool   `json:"selected"`
+}
+
+// LeftoverReport holds the result of a deep leftover scan for an uninstalled or target package.
+type LeftoverReport struct {
+	ToolName   string         `json:"tool_name"`
+	TotalItems int            `json:"total_items"`
+	TotalSize  int64          `json:"total_size"`
+	Items      []LeftoverItem `json:"items"`
+}
+
+// PurgeLeftoversRequest specifies which leftover items to permanently remove.
+type PurgeLeftoversRequest struct {
+	ToolName string   `json:"tool_name"`
+	ItemIDs  []string `json:"item_ids"`
+}
+
+// PurgeResult reports the outcome of purging leftover items.
+type PurgeResult struct {
+	Success     bool     `json:"success"`
+	PurgedCount int      `json:"purged_count"`
+	Errors      []string `json:"errors,omitempty"`
+}
+
+// PathEntry represents an entry inside the system or user PATH environment variable.
+type PathEntry struct {
+	Path   string `json:"path"`
+	Scope  string `json:"scope"` // "user" or "system"
+	Exists bool   `json:"exists"`
+	Error  string `json:"error,omitempty"`
+}
+
+// PathAuditReport contains the audit findings of the Windows PATH environment variable.
+type PathAuditReport struct {
+	TotalEntries int         `json:"total_entries"`
+	DeadCount    int         `json:"dead_count"`
+	Entries      []PathEntry `json:"entries"`
+}
+
+// DevCacheItem represents a cache directory for a development ecosystem.
+type DevCacheItem struct {
+	ID       string `json:"id"`   // "npm", "go_build", "pip", "cargo", "choco"
+	Name     string `json:"name"` // "NPM Cache"
+	Path     string `json:"path"`
+	Exists   bool   `json:"exists"`
+	Size     int64  `json:"size"`
+	CleanCmd string `json:"clean_cmd"` // e.g. "npm cache clean --force" or "rm"
+}
+
+// DevCacheReport contains the list and total disk size of all scanned developer caches.
+type DevCacheReport struct {
+	TotalSize int64          `json:"total_size"`
+	Caches    []DevCacheItem `json:"caches"`
+}
+
+// DevPortItem represents an active listening TCP port on the developer workstation.
+type DevPortItem struct {
+	Port        int    `json:"port"`
+	PID         int    `json:"pid"`
+	ProcessName string `json:"process_name"`
+	Protocol    string `json:"protocol"`
+	CommandLine string `json:"command_line,omitempty"`
+}
+
+// DevPortReport contains all active listening developer ports and their owning processes.
+type DevPortReport struct {
+	TotalListening int           `json:"total_listening"`
+	Ports          []DevPortItem `json:"ports"`
+}
