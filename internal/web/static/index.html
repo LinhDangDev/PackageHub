@@ -413,7 +413,7 @@
               <i data-lucide="sparkles" class="w-5 h-5 text-emerald-400"></i>
               <span>AI Agent Skills & Commands Hub</span>
             </h2>
-            <p class="text-xs text-slate-400">Duyệt và khám phá kỹ năng trực quan theo từng hệ sinh thái (ClaudeKit, OpenCode, Codex). Không cần nhớ cú pháp terminal.</p>
+            <p class="text-xs text-slate-400">Visually explore skills across agent ecosystems (ClaudeKit, OpenCode, Codex). No terminal memory required.</p>
           </div>
           <div class="flex items-center space-x-2 text-xs font-mono">
             <span class="text-slate-400">Total Skills:</span>
@@ -424,7 +424,7 @@
         <!-- Ecosystem Origin Filter Tabs -->
         <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/5">
           <div class="flex items-center space-x-1.5 bg-cyber-900 p-1 rounded-xl border border-white/5 text-xs">
-            <button onclick="filterSkillsByOrigin('all')" id="originBtn-all" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold">Tất Cả (<span id="countOriginAll">0</span>)</button>
+            <button onclick="filterSkillsByOrigin('all')" id="originBtn-all" class="px-3 py-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 font-bold">All (<span id="countOriginAll">0</span>)</button>
             <button onclick="filterSkillsByOrigin('claudekit')" id="originBtn-claudekit" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white font-semibold flex items-center space-x-1.5">
               <span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span>
               <span>ClaudeKit (<span id="countOriginCk">0</span>)</span>
@@ -442,10 +442,10 @@
 
           <!-- ClaudeKit VividKit-Style Tier Filter -->
           <div id="ckTierFilterBar" class="flex items-center space-x-1 bg-cyber-950 p-1 rounded-xl border border-white/5 text-[11px] font-mono">
-            <span class="text-slate-500 px-1.5">Level:</span>
+            <span class="text-slate-500 px-1.5">Tier:</span>
             <button onclick="filterSkillsByTier('all')" id="tierBtn-all" class="px-2 py-0.5 rounded bg-white/10 text-white font-semibold">All</button>
-            <button onclick="filterSkillsByTier('beginner')" id="tierBtn-beginner" class="px-2 py-0.5 rounded text-slate-400 hover:text-emerald-300">🟢 Bắt đầu</button>
-            <button onclick="filterSkillsByTier('intermediate')" id="tierBtn-intermediate" class="px-2 py-0.5 rounded text-slate-400 hover:text-amber-300">🟡 Nâng cao</button>
+            <button onclick="filterSkillsByTier('beginner')" id="tierBtn-beginner" class="px-2 py-0.5 rounded text-slate-400 hover:text-emerald-300">🟢 Beginner</button>
+            <button onclick="filterSkillsByTier('intermediate')" id="tierBtn-intermediate" class="px-2 py-0.5 rounded text-slate-400 hover:text-amber-300">🟡 Intermediate</button>
             <button onclick="filterSkillsByTier('pro')" id="tierBtn-pro" class="px-2 py-0.5 rounded text-slate-400 hover:text-rose-300">🔴 Pro</button>
           </div>
         </div>
@@ -601,7 +601,7 @@
         <div class="flex items-center space-x-2">
           <button onclick="copyDocsSkillCommand()" class="px-3 py-1.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-xs font-semibold flex items-center space-x-1.5 transition">
             <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-            <span id="docsCopyBtnText">Copy Lệnh</span>
+            <span id="docsCopyBtnText">Copy Command</span>
           </button>
           <button onclick="closeSkillDocsDrawer()" class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition">
             <i data-lucide="x" class="w-4 h-4"></i>
@@ -613,9 +613,9 @@
       <div class="flex-1 p-6 space-y-6 overflow-y-auto">
         <!-- 1. Overview Section -->
         <div class="space-y-2">
-          <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Mô Tả & Cách Dùng</div>
+          <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Overview & Usage</div>
           <p id="docsDrawerDesc" class="text-xs text-slate-200 leading-relaxed bg-cyber-950/80 p-4 rounded-xl border border-white/5 font-normal">
-            Triển khai tính năng với quy trình có cấu trúc, lập kế hoạch và sinh mã nguồn tự động.
+            Structured feature implementation workflow with automated planning and generation.
           </p>
         </div>
 
@@ -624,7 +624,7 @@
           <div class="flex items-center justify-between text-[10px] uppercase font-bold text-cyan-400 tracking-wider">
             <span class="flex items-center space-x-1.5">
               <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
-              <span>Tham Số & Flags Hỗ Trợ</span>
+              <span>Command Flags & Parameters</span>
             </span>
             <span id="docsFlagsCountBadge" class="text-[10px] font-mono text-slate-400">0 flags</span>
           </div>
@@ -635,7 +635,7 @@
         <!-- 2. Interactive Example Prompts (Click to Copy!) -->
         <div class="space-y-2.5">
           <div class="flex items-center justify-between text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-            <span>Ví Dụ Lệnh Thực Tế (Click Để Copy)</span>
+            <span>Interactive Example Prompts (Click to Copy)</span>
             <span class="text-cyan-400 font-mono text-[10px]">1-Click Copy</span>
           </div>
           <div id="docsExamplesContainer" class="space-y-2 font-mono text-xs"></div>
@@ -645,18 +645,18 @@
         <div class="p-4 rounded-xl border border-cyan-500/20 bg-cyan-500/5 space-y-2 text-xs">
           <div class="font-bold text-cyan-300 flex items-center space-x-1.5">
             <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i>
-            <span>Mẹo Chuyên Nghiệp Từ ClaudeKit</span>
+            <span>Pro Tips from ClaudeKit</span>
           </div>
           <ul class="text-[11px] text-slate-300 space-y-1.5 list-disc list-inside">
-            <li>Sử dụng <code class="text-cyan-300 font-mono">--fast</code> để bỏ qua nghiên cứu nếu đã có kế hoạch sẵn.</li>
-            <li>Tham chiếu file với <code class="text-cyan-300 font-mono">@plan.md</code> để agent nạp trực tiếp ngữ cảnh.</li>
-            <li>Dùng <code class="text-cyan-300 font-mono">/clear</code> để xóa sạch lịch sử token trước khi triển khai tác vụ mới.</li>
+            <li>Use <code class="text-cyan-300 font-mono">--fast</code> to bypass preliminary research when execution plan is ready.</li>
+            <li>Reference plan artifacts with <code class="text-cyan-300 font-mono">@plan.md</code> for deterministic context loading.</li>
+            <li>Execute <code class="text-cyan-300 font-mono">/clear</code> to purge token history before starting a distinct workflow.</li>
           </ul>
         </div>
 
         <!-- 4. Full Markdown Documentation -->
         <div class="space-y-2">
-          <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Tài Liệu Chi Tiết (SKILL.md)</div>
+          <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Detailed Documentation (SKILL.md)</div>
           <div id="docsMarkdownBody" class="p-4 rounded-xl bg-cyber-950 border border-white/5 text-xs text-slate-300 space-y-3 font-mono leading-relaxed whitespace-pre-wrap max-h-80 overflow-y-auto"></div>
         </div>
       </div>
@@ -1167,7 +1167,7 @@
       }
 
       if (!filtered.length) {
-        container.innerHTML = `<div class="col-span-3 p-12 text-center text-slate-500 font-medium">Không tìm thấy skill nào trong danh mục này.</div>`;
+        container.innerHTML = `<div class="col-span-3 p-12 text-center text-slate-500 font-medium">No skills found in this category.</div>`;
         return;
       }
 
@@ -1184,8 +1184,8 @@
         }
 
         let tierLabel = '';
-        if (s.tier === 'beginner') tierLabel = '<span class="text-[10px] text-emerald-400 font-mono">🟢 Bắt đầu</span>';
-        if (s.tier === 'intermediate') tierLabel = '<span class="text-[10px] text-amber-400 font-mono">🟡 Nâng cao</span>';
+        if (s.tier === 'beginner') tierLabel = '<span class="text-[10px] text-emerald-400 font-mono">🟢 Beginner</span>';
+        if (s.tier === 'intermediate') tierLabel = '<span class="text-[10px] text-amber-400 font-mono">🟡 Intermediate</span>';
         if (s.tier === 'pro') tierLabel = '<span class="text-[10px] text-rose-400 font-mono">🔴 Pro</span>';
 
         return `
@@ -1212,7 +1212,7 @@
             <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-slate-500 font-mono">
               <span class="truncate max-w-[170px]" title="${s.argument_hint}">${s.argument_hint || s.path.split(/[\\/]/).pop()}</span>
               <span class="text-cyan-400 group-hover:underline flex items-center space-x-0.5 font-semibold">
-                <span>Xem Docs</span>
+                <span>View Docs</span>
                 <i data-lucide="chevron-right" class="w-3 h-3"></i>
               </span>
             </div>
@@ -1239,13 +1239,13 @@
       const tierBadge = document.getElementById('docsDrawerTierBadge');
       if (s.tier === 'beginner') {
         tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold';
-        tierBadge.innerText = '🟢 Cơ bản (Beginner)';
+        tierBadge.innerText = '🟢 Beginner';
       } else if (s.tier === 'pro') {
         tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/30 font-bold';
-        tierBadge.innerText = '🔴 Chuyên nghiệp (Pro)';
+        tierBadge.innerText = '🔴 Pro';
       } else {
         tierBadge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold';
-        tierBadge.innerText = '🟡 Nâng cao (Intermediate)';
+        tierBadge.innerText = '🟡 Intermediate';
       }
 
       const authorBadge = document.getElementById('docsDrawerAuthorBadge');
@@ -1267,7 +1267,7 @@
                 ${f.values ? `<span class="px-1.5 py-0.2 rounded text-[10px] font-mono bg-white/5 text-amber-300 border border-white/5">${f.values}</span>` : ''}
               </div>
               <button onclick="appendFlagToCommand('${f.name}')" title="Thêm cờ này vào câu lệnh" class="text-[10px] font-mono text-cyan-400 hover:text-cyan-300 hover:underline flex items-center space-x-0.5 font-semibold">
-                <span>+ Thêm cờ</span>
+                <span>+ Add Flag</span>
               </button>
             </div>
             <p class="text-[11px] text-slate-300 leading-relaxed font-normal">${f.description || 'Tham số điều khiển hành vi cho skill này.'}</p>
@@ -1283,7 +1283,7 @@
       exContainer.innerHTML = examples.map(ex => `
         <div class="p-2.5 bg-cyber-950 border border-white/5 rounded-xl flex items-center justify-between hover:border-cyan-500/30 transition group">
           <code class="text-xs text-cyan-300 truncate">${ex}</code>
-          <button onclick="copyText('${ex}')" class="px-2.5 py-1 rounded bg-white/5 hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-300 text-[10px] font-mono transition shrink-0 ml-2 font-semibold">Copy Lệnh</button>
+          <button onclick="copyText('${ex}')" class="px-2.5 py-1 rounded bg-white/5 hover:bg-cyan-500/20 text-slate-400 hover:text-cyan-300 text-[10px] font-mono transition shrink-0 ml-2 font-semibold">Copy</button>
         </div>
       `).join('');
 
@@ -1336,14 +1336,14 @@
       const cmd = selectedSkillForDocs.command || '/' + selectedSkillForDocs.name;
       navigator.clipboard.writeText(cmd);
       const btn = document.getElementById('docsCopyBtnText');
-      btn.innerText = 'Đã Copy!';
-      setTimeout(() => btn.innerText = 'Copy Lệnh', 2000);
-      showToast('Đã copy lệnh: ' + cmd);
+      btn.innerText = 'Copied!';
+      setTimeout(() => btn.innerText = 'Copy Command', 2000);
+      showToast('Copied command: ' + cmd);
     }
 
     function copyText(txt) {
       navigator.clipboard.writeText(txt);
-      showToast('Đã copy: ' + txt);
+      showToast('Copied: ' + txt);
     }
 
     function appendFlagToCommand(flagName) {
@@ -1351,7 +1351,7 @@
       const baseCmd = selectedSkillForDocs.command || '/' + selectedSkillForDocs.name;
       const fullCmd = `${baseCmd} ${flagName}`;
       copyText(fullCmd);
-      showToast(`Đã copy lệnh kèm cờ: ${fullCmd}`);
+      showToast(`Copied command with flag: ${fullCmd}`);
     }
 
     // ================= 1-CLICK AUTOMATED BATCH PROFILE INSTALLER =================
@@ -1646,21 +1646,21 @@
             fixBtn = `
               <button onclick="fixSpecificDependency('${p.name}', '${d.name}', ${d.is_dev})" title="Fix & pin '${d.name}' to latest stable semver" class="px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 text-[10px] font-mono transition flex items-center space-x-1 shrink-0">
                 <i data-lucide="zap" class="w-2.5 h-2.5"></i>
-                <span>Fix Gói Này</span>
+                <span>Fix Dependency</span>
               </button>`;
           } else if (d.status === 'DEPRECATED') {
             statusBadge = `<span class="text-rose-400 font-bold" title="${d.issue}">Deprecated</span>`;
             fixBtn = `
               <button onclick="fixSpecificDependency('${p.name}', '${d.name}', ${d.is_dev})" title="Update or replace '${d.name}'" class="px-2 py-0.5 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-[10px] font-mono transition flex items-center space-x-1 shrink-0">
                 <i data-lucide="zap" class="w-2.5 h-2.5"></i>
-                <span>Fix Gói Này</span>
+                <span>Fix Dependency</span>
               </button>`;
           } else if (d.status === 'OUTDATED') {
             statusBadge = `<span class="text-cyan-400 font-bold">Outdated</span>`;
             fixBtn = `
               <button onclick="fixSpecificDependency('${p.name}', '${d.name}', ${d.is_dev})" title="Update '${d.name}' to latest version" class="px-2 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-[10px] font-mono transition flex items-center space-x-1 shrink-0">
                 <i data-lucide="arrow-up" class="w-2.5 h-2.5"></i>
-                <span>Update Gói</span>
+                <span>Update Dependency</span>
               </button>`;
           }
 
@@ -1696,7 +1696,7 @@
     async function fixSpecificDependency(projName, depName, isDev) {
       const p = projectsData.find(x => x.name === projName);
       if (!p) return;
-      showToast(`Đang fix riêng gói ${depName}...`);
+      showToast(`Fixing dependency ${depName}...`);
       try {
         const res = await fetch('/api/project/fix-dep', {
           method: 'POST',
@@ -1710,14 +1710,14 @@
         });
         const data = await res.json();
         if (data.success) {
-          showToast(`✓ Đã fix xong gói ${depName}!`);
+          showToast(`✓ Successfully fixed ${depName}!`);
           await triggerProjectScan();
           openProjectDrawer(projName);
         } else {
-          showToast(`Lỗi khi fix: ${data.error || data.output}`);
+          showToast(`Fix error: ${data.error || data.output}`);
         }
       } catch (err) {
-        showToast('Lỗi mạng: ' + err);
+        showToast('Network error: ' + err);
       }
     }
 
