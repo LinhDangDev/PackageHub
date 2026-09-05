@@ -12,7 +12,7 @@ This document provides a comprehensive, visual, and functional walkthrough of **
 +--------------------------------------------------------------------------------------------------------------------+
 ```
 
-- **Brand Logo & Status Halo (`P`)**:
+- **Brand Logo & Status Indicator (`P`)**:
   - Displays the PackageHub branding with a pulsing green indicator signifying active backend connectivity.
   - Badges: `v1.2` release version and `Windows Native` (confirming Microsoft Edge WebView2 runtime mode).
 - **Global Search Bar (`Ctrl + K`)**:
@@ -33,7 +33,7 @@ This document provides a comprehensive, visual, and functional walkthrough of **
   - ⚡ **Dashboard**: High-level system overview, health grades, and AI coding agent status cards.
   - 📁 **Project Auditor**: Drive-wide codebase scanner and granular dependency health auditor.
   - 📦 **Dev Tools & Manage**: Installed package table with version switcher, uninstaller, and diagnostics.
-  - 🧠 **Agent Skills**: Categorized repository of 222+ AI agent skills with VividKit-style documentation.
+  - 🧠 **Agent Skills**: Categorized repository of 222+ AI agent skills with interactive documentation.
   - 🔌 **MCP Servers**: Model Context Protocol servers configured in Claude Desktop and Cursor.
   - 🔄 **Machine Sync & Diff**: Cross-machine profile import, diff calculation, and 1-click auto-installer.
 - **Host Machine Status Card (Pinned & Sticky)**:
@@ -105,17 +105,17 @@ Designed to audit real-world codebases across drives (e.g. `D:\IdeaSideProject`)
 
 ---
 
-### 3.4. AI Agent Skills Hub & VividKit-Style Docs (Tab: `Agent Skills`)
+### 3.4. AI Agent Skills Hub & Command Inspector (Tab: `Agent Skills`)
 
 ```
 +-------------------------------------------------------------------------------------------------+
 | 🧠 AI Agent Skills & Commands Hub                                 Total Skills: 222             |
-| [All (222)] [ClaudeKit (85)] [OpenCode/OMP (40)] [Codex (15)] [Community (82)]                  |
+| [All (222)] [Claude Agent (85)] [OpenCode/OMP (40)] [Codex (15)] [Community (82)]              |
 | Tier: [All] [🟢 Beginner] [🟡 Intermediate] [🔴 Pro]                                            |
 +-------------------------------------------------------------------------------------------------+
 |                                                                                                 |
 | [ /ck:cook ]             [ /ck:plan ]             [ /ck:ask ]            [ /ck:ai-artist ]      |
-| ClaudeKit • 🟡 Interm.    ClaudeKit • 🟡 Interm.    ClaudeKit • 🟢 Begin.  ClaudeKit • 🔴 Pro     |
+| Claude Agent • 🟡 Interm. Claude Agent • 🟡 Interm. Claude Agent • 🟢 Begin. Claude Agent • 🔴 Pro|
 | Structured implementation Technical roadmap       Architecture advice    Nano Banana visual art |
 | [View Docs ➔]            [View Docs ➔]            [View Docs ➔]          [View Docs ➔]          |
 |                                                                                                 |
@@ -124,13 +124,13 @@ Designed to audit real-world codebases across drives (e.g. `D:\IdeaSideProject`)
 
 #### What It Does:
 1. **Tool Origin Separation**:
-   - Skills are cleanly partitioned by ecosystem: **ClaudeKit (`ck:`)**, **OpenCode / OMP**, **Codex**, and **Universal / Community**.
-2. **VividKit Skill Tiers**:
-   - Organizes ClaudeKit commands into:
-     - 🟢 **Beginner**: `/ck:ask`, `/ck:brainstorm`, `/ck:fix`, `/ck:docs`
-     - 🟡 **Intermediate**: `/ck:plan`, `/ck:cook`, `/ck:test`, `/ck:review-pr`, `/ck:git`
-     - 🔴 **Pro**: `/ck:bootstrap`, `/ck:scout`, `/ck:ship`, `/ck:watzup`, `/ck:team`, `/ck:ai-artist`
-3. **Interactive VividKit Documentation Drawer**:
+   - Skills are cleanly partitioned by the agent or harness they belong to: **Claude Coding Agent**, **OpenCode / OMP**, **Codex**, and **Universal / Community**.
+2. **Skill Tiers**:
+   - Organizes commands into complexity levels:
+     - 🟢 **Beginner**: Quick answers, brainstorming, single bug fixes, documentation.
+     - 🟡 **Intermediate**: Structured planning, test-driven cooking, PR reviews, git flows.
+     - 🔴 **Pro**: End-to-end bootstrapping, deep codebase scouting, automated release shipping, multi-agent teams.
+3. **Interactive Command Documentation Drawer**:
    - Clicking any skill card slides open the full documentation drawer:
      - **Command Reference**: Full syntax with highlighted arguments (e.g. `/ck:cook [task] [--fast|--parallel|--tdd]`).
      - **Command Flags & Parameters**:
@@ -138,7 +138,7 @@ Designed to audit real-world codebases across drives (e.g. `D:\IdeaSideProject`)
        - Displays clear, concise explanations for each flag's behavior.
        - **`+ Add Flag` Button**: 1-click appends the selected flag into your command prompt and copies it to clipboard!
      - **Interactive Example Prompts**: Real-world prompts with 1-click copy buttons.
-     - **Pro Tips from ClaudeKit**: Expert recommendations for token management, context files (`@plan.md`), and memory clearing (`/clear`).
+     - **Pro Workflow Tips**: Recommendations for token management, context files (`@plan.md`), and memory clearing (`/clear`).
      - **Full Markdown Docs**: Complete unredacted `SKILL.md` content.
    - **Click-Outside to Close**: Click anywhere outside the drawer to collapse it.
 

@@ -18,7 +18,7 @@
 |  | - Choco XML (.nuspec)  |  | - endoflife.date  |  | - YAML Export  |  |
 |  | - Scoop App dirs       |  | - NPM Registry    |  | - ZIP Bundler  |  |
 |  | - NPM package.json     |  | - PATH Resolver   |  | - Secret Mask  |  |
-|  | - Skills & VividKit Doc|  | - Engine Checker  |  | - Batch Install|  |
+|  | - Agent Skills & Flags |  | - Engine Checker  |  | - Batch Install|  |
 |  | - Project Dep Auditor  |  | - TTL Cache       |  | - Diff Engine  |  |
 |  +------------------------+  +-------------------+  +----------------+  |
 |                                                                         |

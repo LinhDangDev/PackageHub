@@ -51,12 +51,12 @@ Double-click `packetinstall.exe` in File Explorer or run in PowerShell:
 - **Uninstalling Tools**: Click the trash icon 🗑️ to remove a tool cleanly from NPM, Chocolatey, or Scoop.
 - **Installing New Tools**: Click **"+ Install Tool"** in the top navigation bar to search and install tools with live console output.
 
-### 2.4. AI Agent Skills Hub & VividKit-Style Docs (Tab: `Agent Skills`)
-- **Ecosystem Origin Filters**: Switch between `ClaudeKit`, `OpenCode / OMP`, `Codex`, and `Community / Universal`.
-- **VividKit Skill Tiers**:
-  - 🟢 **Beginner**: `/ck:ask`, `/ck:brainstorm`, `/ck:fix`, `/ck:docs`
-  - 🟡 **Intermediate**: `/ck:plan`, `/ck:cook`, `/ck:test`, `/ck:review-pr`, `/ck:git`
-  - 🔴 **Pro**: `/ck:bootstrap`, `/ck:scout`, `/ck:ship`, `/ck:watzup`, `/ck:team`, `/ck:ai-artist`
+### 2.4. AI Agent Skills Hub & Command Inspector (Tab: `Agent Skills`)
+- **Ecosystem Origin Filters**: Switch between `Claude Agent`, `OpenCode / OMP`, `Codex`, and `Community / Universal`.
+- **Skill Tiers**:
+  - 🟢 **Beginner**: Quick questions, brainstorming, single bug fixes, documentation.
+  - 🟡 **Intermediate**: Structured planning, test-driven cooking, PR reviews, git flows.
+  - 🔴 **Pro**: End-to-end bootstrapping, deep codebase scouting, automated release shipping, multi-agent teams.
 - **Interactive Documentation Drawer**:
   - Click any skill to view its command syntax, arguments, interactive 1-click copy examples, pro tips, and full Markdown documentation.
   - **Flag Explanations & 1-Click Append**: Inspect every supported flag (`--fast`, `--mode`, `--provider`, `--tdd`, `--skip`) with detailed descriptions. Click `+ Add Flag` to append the flag directly to your prompt.

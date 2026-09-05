@@ -1,6 +1,6 @@
 # ⚡ PackageHub (`packetinstall`)
 
-> **Open-Source Developer Workstation, Autonomous AI Agent Skills, Project Auditor & Offline ZIP Bundler**  
+> **Open-Source Developer Environment, AI Agent Skills, Project Auditor & Offline Workstation Bundler**  
 > An ultra-fast, zero-bloat developer environment manager written in Go with an embedded native Windows WebView2 desktop interface.
 
 [![Go Version](https://img.shields.io/badge/go-1.22%2B-blue.svg)](https://golang.org)
@@ -10,20 +10,44 @@
 
 ---
 
-## 🌟 Highlights & Key Features
+## 🌟 What PackageHub Does
 
-### 1. 🧠 Autonomous AI Agent Skills Hub & VividKit-Style Docs
-- **Tool Origin Separation**: Cleanly partitions skills by origin: **ClaudeKit (`ck:`)**, **OpenCode / OMP**, **Codex**, or **Community / Universal**.
-- **VividKit Skill Tiers**:
-  - 🟢 **Beginner**: `/ck:ask`, `/ck:brainstorm`, `/ck:fix`, `/ck:docs`, `/ck:interview-docs`...
-  - 🟡 **Intermediate**: `/ck:plan`, `/ck:cook`, `/ck:test`, `/ck:review-pr`, `/ck:git`...
-  - 🔴 **Pro**: `/ck:bootstrap`, `/ck:scout`, `/ck:ship`, `/ck:watzup`, `/ck:team`, `/ck:ai-artist`...
+PackageHub is an all-in-one developer environment auditor, package manager coordinator, and autonomous AI agent skills hub. It provides deep visibility into your local tools, runtimes, coding agents, and code projects without requiring terminal memorization or complex manual configuration.
+
+```
++--------------------------------------------------------------------------------------------------------------------+
+|                                              PackageHub Desktop App                                                |
+|      (Native Windows Window • Edge WebView2 • Dark Mode DWM • Zero Terminal Popups • Fast-Scan < 100ms)            |
++--------------------------------------------------------------------------------------------------------------------+
+|  ⚡ Dashboard         | Overview of all dev packages, project health, AI agent status, and active connectors        |
+|  📁 Project Auditor   | Recursively scans drives/codebases, audits dependencies for vulnerabilities & fixes them     |
+|  📦 Dev Tools         | Inspects, upgrades, downgrades (Version ⇅), or uninstalls Chocolatey, Scoop, and NPM tools |
+|  🧠 Agent Skills      | Scans & catalogs skills across coding agents (Claude, OpenCode, Codex), parses flags & docs |
+|  🔌 MCP Servers       | Catalogs Model Context Protocol connectors configured in Claude Desktop & Cursor IDE        |
+|  🔄 Sync & Bundler    | Exports declarative profiles (YAML or complete offline portable ZIP bundles) for new PCs    |
++--------------------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+## 🚀 Key Features & Capabilities
+
+### 1. 🧠 AI Agent Skills & Commands Inspector
+PackageHub automatically scans, discovers, and catalogs all autonomous AI coding agent skills installed on your system (across `~/.agent/skills`, `~/.claude/skills`, `~/.omp/agent/skills`, and `~/.codex/skills`):
+- **Agent Origin Separation**: Categorizes skills by the agent or harness they belong to:
+  - **Claude Coding Agent**: Skills using the Claude Code specification.
+  - **OpenCode / Oh My Pi (OMP)**: Skills registered for the OpenCode ecosystem.
+  - **Codex**: Autonomous goals and skills for the OpenAI Codex CLI.
+  - **Universal & Community**: Community-shared workflows (`fable-thinking`, `aesthetic`, `repomix`, `threejs`).
+- **Complexity Tier Classification**:
+  - 🟢 **Beginner**: Quick questions, brainstorming, document generation, and single bug fixes.
+  - 🟡 **Intermediate**: Structured planning, test-driven cooking, PR reviews, and database tasks.
+  - 🔴 **Pro**: End-to-end bootstrapping, deep codebase scouting, automated release shipping, and multi-agent teams.
 - **Detailed Command Flags & Parameter Explanations**:
-  - Automatically analyzes arguments and flags (`--fast`, `--mode`, `--provider`, `--skip`, `--tdd`, `--parallel`, etc.) with clear, contextual explanations.
+  - Automatically parses argument hints and documents every supported flag (`--fast`, `--mode`, `--provider`, `--skip`, `--tdd`, `--parallel`, `--advice`, etc.) with clear, plain-language explanations.
   - **`+ Add Flag` Button**: 1-click appends the flag directly into the sample command and copies it to your clipboard.
-- **Interactive VividKit Documentation Drawer**:
-  - Click any skill to slide out detailed documentation.
-  - Features full command references, arguments, interactive 1-click copy examples, pro tips, and raw `SKILL.md` content.
+- **Interactive Documentation Drawer**:
+  - Click any skill to slide out detailed documentation including command references, interactive prompt examples, and raw `SKILL.md` content.
   - **Click-Outside to Close**: Smoothly collapses when clicking anywhere outside the drawer or pressing `ESC`.
 
 ### 2. 📁 Drive & Project Dependency Auditor
